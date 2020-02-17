@@ -77,4 +77,45 @@ public class BorrowerService {
 		}
 
 	}
+	public void returnProcess (Integer cardNo, Integer bookId, Integer branchId) throws SQLException {
+		Connection c = null;
+
+		try {
+			c = conn.connectDatabase();
+			Borrower borrower = new BorrowerDAO(c).readBorrowersById(cardNo).get(0) ;
+			Book book = new BookDAO(c).readBooksById(bookId).get(0);
+			Branch branch = new BranchDAO(c).readBranchsById(branchId).get(0);
+
+			returnBook(borrower, book, branch);
+		} catch (Exception e) {
+
+			c.rollback();
+
+			e.printStackTrace();
+		} finally {
+			c.close();
+		}
+	}
+	public void returnBook(Borrower borrower, Book book, Branch branch) throws SQLException {
+		Connection c = null;
+		try {
+			c = conn.connectDatabase();
+			Copies copy = new CopiesDAO(c).readCopyByBranchIDBookID(book, branch).get(0);
+			Integer noOfCopies = copy.getNoOfCopies();
+			
+			// updating tbl_book_copies
+			new CopiesDAO(c).updateCopies(book, branch, noOfCopies + 1);
+			LocalDate localDate = LocalDate.now();
+			//updating tbl_book_loans
+			new LoansDAO(c).updateDateIn(book, branch, borrower, Date.valueOf(localDate));
+			
+			c.commit();
+			System.out.println(localDate.toString() + " Returned " + book.getTitle() + " to "+ branch.getBranchName());
+		} catch (Exception e) {
+			c.rollback();
+			e.printStackTrace();
+			System.err.println("Could not return Book" + book.toString());
+			
+		}
+	}
 }

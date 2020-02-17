@@ -1,6 +1,7 @@
 package com.ss.lms.controller;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,27 +28,37 @@ public class BorrowerController {
 
 	@RequestMapping(path = "/api/books/checkout", method = RequestMethod.POST, headers = {
 			"Accept=application/json,application/xml" }, produces = { "application/json", "application/xml" })
-	public ResponseEntity<String> checkOutBook(@RequestBody Loans loan) throws SQLException {
+	public ResponseEntity<Map<String, Object>> checkOutBook(@RequestBody Loans loan) throws SQLException {
 		Integer cardNo = loan.getCardNo(), bookId = loan.getBookId(), branchId = loan.getBranchId();
 
+		Map<String, Object> hm = new HashMap<String, Object>();
+
 		if (cardNo == null || bookId == null || branchId == null) {
-			String message = "Bad Request: Please provide cardNo, bookId, branchId ";
-			return new ResponseEntity<String>(message, HttpStatus.BAD_REQUEST);
+
+			hm.put("message", "Bad Request: Please provide cardNo, bookId, branchId ");
+			return new ResponseEntity<Map<String, Object>>(hm, HttpStatus.BAD_REQUEST);
 		} else {
 			borrowerService.checkOut(cardNo, bookId, branchId);
 		}
+		hm.put("message", "Succesfully checked out book");
 
-		String message = "Succesfully checked out book";
-		return new ResponseEntity<String>(message, HttpStatus.OK);
+		return new ResponseEntity<Map<String, Object>>(hm, HttpStatus.OK);
 	}
 
 	@RequestMapping(path = "/api/books/return", method = RequestMethod.POST, headers = {
 			"Accept=application/json,application/xml" }, produces = { "application/json", "application/xml" })
 	public ResponseEntity<String> returnBook(@RequestBody Loans loan) throws SQLException {
 
-		borrowerService.checkOut(loan.getCardNo(), loan.getBookId(), loan.getBranchId());
+		Integer cardNo = loan.getCardNo(), bookId = loan.getBookId(), branchId = loan.getBranchId();
 
-		String message = "Succesfully returned book";
+		if (cardNo == null || bookId == null || branchId == null) {
+			String message = "Bad Request: Please provide cardNo, bookId, branchId ";
+			return new ResponseEntity<String>(message, HttpStatus.BAD_REQUEST);
+		} else {
+			borrowerService.returnProcess(cardNo, bookId, branchId);
+		}
+
+		String message = "Succesfully checked out book";
 		return new ResponseEntity<String>(message, HttpStatus.OK);
 	}
 
