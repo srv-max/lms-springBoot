@@ -34,7 +34,7 @@ public class BorrowerController {
 			String message = "Bad Request: Please provide cardNo, bookId, branchId ";
 			return new ResponseEntity<String>(message, HttpStatus.BAD_REQUEST);
 		} else {
-			//borrowerService.checkOut(cardNo, bookId, branchId);
+			borrowerService.checkOut(cardNo, bookId, branchId);
 		}
 
 		String message = "Succesfully checked out book";
