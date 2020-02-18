@@ -9,21 +9,15 @@ public class Loans implements Serializable {
 	 */
 	private static final long serialVersionUID = -8268329077429523053L;
 
-	private Integer branchId;
+	private Branch branch;
 
-	private Integer bookId;
-	private Integer cardNo;
+	private Book book;
+	private Borrower borrower;
 	private LocalDate dateOut;
 	private LocalDate dueDate;
 	private LocalDate dateIn;
 
-	public Integer getBranchId() {
-		return branchId;
-	}
-
-	public void setBranchId(Integer branchId) {
-		this.branchId = branchId;
-	}
+	
 
 	public LocalDate getDateOut() {
 		return dateOut;
@@ -49,20 +43,29 @@ public class Loans implements Serializable {
 		this.dateIn = dateIn;
 	}
 
-	public Integer getBookId() {
-		return bookId;
+	public Branch getBranch() {
+		return branch;
 	}
 
-	public void setBookId(Integer bookId) {
-		this.bookId = bookId;
+	public void setBranch(Branch branch) {
+		this.branch = branch;
 	}
 
-	public Integer getCardNo() {
-		return cardNo;
+	public Book getBook() {
+		return book;
 	}
 
-	public void setCardNo(Integer cardNo) {
-		this.cardNo = cardNo;
+	public void setBook(Book book) {
+		this.book = book;
 	}
+
+	public Borrower getBorrower() {
+		return borrower;
+	}
+
+	public void setBorrower(Borrower borrower) {
+		this.borrower = borrower;
+	}
+
 
 }

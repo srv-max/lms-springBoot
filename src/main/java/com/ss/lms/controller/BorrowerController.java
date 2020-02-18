@@ -7,17 +7,13 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
+
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ss.lms.entity.Author;
-import com.ss.lms.entity.Book;
-import com.ss.lms.entity.Borrower;
-import com.ss.lms.entity.Branch;
 import com.ss.lms.entity.Loans;
 import com.ss.lms.service.BorrowerService;
 
@@ -28,38 +24,58 @@ public class BorrowerController {
 
 	@RequestMapping(path = "/api/books/checkout", method = RequestMethod.POST, headers = {
 			"Accept=application/json,application/xml" }, produces = { "application/json", "application/xml" })
-	public ResponseEntity<Map<String, Object>> checkOutBook(@RequestBody Loans loan) throws SQLException {
-		Integer cardNo = loan.getCardNo(), bookId = loan.getBookId(), branchId = loan.getBranchId();
+	public ResponseEntity<Loans> checkOutBook(@RequestBody Loans loan) throws SQLException {
 
-		Map<String, Object> hm = new HashMap<String, Object>();
+		Integer cardNo = null, bookId = null, branchId = null;
 
-		if (cardNo == null || bookId == null || branchId == null) {
-
-			hm.put("message", "Bad Request: Please provide cardNo, bookId, branchId ");
-			return new ResponseEntity<Map<String, Object>>(hm, HttpStatus.BAD_REQUEST);
-		} else {
-			borrowerService.checkOut(cardNo, bookId, branchId);
+		try {
+			cardNo = loan.getBorrower().getCardNo();
+			bookId = loan.getBook().getBookId();
+			branchId = loan.getBranch().getBranchId();
+		} catch (Exception e) {
+			return new ResponseEntity<Loans>(loan, HttpStatus.BAD_REQUEST);
 		}
-		hm.put("message", "Succesfully checked out book");
 
-		return new ResponseEntity<Map<String, Object>>(hm, HttpStatus.OK);
+		if (!(cardNo == null || bookId == null || branchId == null)) {
+			Loans l = null;
+			try {
+				l = borrowerService.checkOutBook(loan);
+				return new ResponseEntity<Loans>(l, HttpStatus.OK);
+			} catch (Exception e) {
+				return new ResponseEntity<Loans>(l, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+
+		}
+
+		return new ResponseEntity<Loans>(loan, HttpStatus.BAD_REQUEST);
 	}
 
 	@RequestMapping(path = "/api/books/return", method = RequestMethod.POST, headers = {
 			"Accept=application/json,application/xml" }, produces = { "application/json", "application/xml" })
-	public ResponseEntity<String> returnBook(@RequestBody Loans loan) throws SQLException {
+	public ResponseEntity<Loans> returnBook(@RequestBody Loans loan) throws SQLException {
 
-		Integer cardNo = loan.getCardNo(), bookId = loan.getBookId(), branchId = loan.getBranchId();
+		Integer cardNo = null, bookId = null, branchId = null;
 
-		if (cardNo == null || bookId == null || branchId == null) {
-			String message = "Bad Request: Please provide cardNo, bookId, branchId ";
-			return new ResponseEntity<String>(message, HttpStatus.BAD_REQUEST);
-		} else {
-			borrowerService.returnProcess(cardNo, bookId, branchId);
+		try {
+			cardNo = loan.getBorrower().getCardNo();
+			bookId = loan.getBook().getBookId();
+			branchId = loan.getBranch().getBranchId();
+		} catch (Exception e) {
+			return new ResponseEntity<Loans>(loan, HttpStatus.BAD_REQUEST);
 		}
 
-		String message = "Succesfully checked out book";
-		return new ResponseEntity<String>(message, HttpStatus.OK);
+		if (!(cardNo == null || bookId == null || branchId == null)) {
+			Loans l = null;
+			try {
+				l = borrowerService.returnBook(loan);
+				return new ResponseEntity<Loans>(l, HttpStatus.OK);
+			} catch (Exception e) {
+				return new ResponseEntity<Loans>(l, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+
+		}
+
+		return new ResponseEntity<Loans>(loan, HttpStatus.BAD_REQUEST);
 	}
 
 }

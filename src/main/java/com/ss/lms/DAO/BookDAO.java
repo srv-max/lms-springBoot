@@ -35,8 +35,8 @@ public class BookDAO extends BaseDAO<Book> {
 	public List<Book> readBooks() throws ClassNotFoundException, SQLException {
 		return read("select * from tbl_book", null);
 	}
-	public List<Book> readBooksById (Integer bookId) throws ClassNotFoundException, SQLException {
-		return read("select * from tbl_book where bookId = ?", new Object [] {bookId});
+	public Book readBooksById (Integer bookId) throws ClassNotFoundException, SQLException {
+		return read("select * from tbl_book where bookId = ?", new Object [] {bookId}).get(0);
 	}
 
 	public List<Book> readBooksByName(String title) throws ClassNotFoundException, SQLException {
@@ -47,6 +47,7 @@ public class BookDAO extends BaseDAO<Book> {
 	public List<Book> extractData(ResultSet rs) throws SQLException, ClassNotFoundException {
 		List<Book> books = new ArrayList<>();
 		AuthorDAO adao = new AuthorDAO(conn);
+	
 		// genre doa, branch dao
 		while (rs.next()) {
 			Book b = new Book();

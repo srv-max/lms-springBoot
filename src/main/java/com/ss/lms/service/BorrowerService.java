@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
+
 import org.springframework.stereotype.Component;
 
 import com.ss.lms.DAO.BookDAO;
@@ -17,6 +18,7 @@ import com.ss.lms.entity.Book;
 import com.ss.lms.entity.Borrower;
 import com.ss.lms.entity.Branch;
 import com.ss.lms.entity.Copies;
+import com.ss.lms.entity.Loans;
 
 //                              /api/book/checkout /api/bookCheckout
 @Component
@@ -25,35 +27,25 @@ public class BorrowerService {
 
 	public BorrowerService() throws ClassNotFoundException {
 		conn = new ConnectionUtil();
+		
 
 	}
 
-	public void checkOut(Integer cardNo, Integer bookId, Integer branchId) throws SQLException {
+	public Loans checkOutBook(Loans loan) throws Exception  {
 		Connection c = null;
 
 		try {
 			c = conn.connectDatabase();
-			Borrower borrower = new BorrowerDAO(c).readBorrowersById(cardNo).get(0) ;
-			Book book = new BookDAO(c).readBooksById(bookId).get(0);
-			Branch branch = new BranchDAO(c).readBranchsById(branchId).get(0);
 
-			checkOutBook(borrower, book, branch);
-		} catch (Exception e) {
+			Borrower borrower = new BorrowerDAO(c).readByCardNoEssentialData(loan.getBorrower().getCardNo());
+			loan.setBorrower(borrower);
 
-			c.rollback();
+			Book book = new BookDAO(c).readBooksById(loan.getBook().getBookId());
+			loan.setBook(book);
 
-			e.printStackTrace();
-		} finally {
-			c.close();
-		}
-
-	}
-
-	public void checkOutBook(Borrower borrower, Book book, Branch branch) throws SQLException {
-		Connection c = null;
-
-		try {
-			c = conn.connectDatabase();
+			Branch branch = new BranchDAO(c).readBranchsById(loan.getBranch().getBranchId());
+			loan.setBranch(branch);
+			
 			Copies copy = new CopiesDAO(c).readCopyByBranchIDBookID(book, branch).get(0);
 			Integer noOfCopies = copy.getNoOfCopies();
 
@@ -62,7 +54,8 @@ public class BorrowerService {
 
 			LocalDate localDate = LocalDate.now();
 			LocalDate dueDate = localDate.plusDays(7);
-
+			loan.setDateOut(localDate);
+			loan.setDueDate(dueDate);
 			// updating tbl_book_loans
 			new LoansDAO(c).addLoans(book, branch, borrower, Date.valueOf(localDate), Date.valueOf(dueDate));
 			c.commit();
@@ -71,51 +64,53 @@ public class BorrowerService {
 		} catch (Exception e) {
 			c.rollback();
 			e.printStackTrace();
-			System.err.println("Could not checkout Book" + book.toString());
+			System.err.println("Could not checkout Book");
+			throw e;
+			
 		} finally {
 			c.close();
 		}
+		return loan;
 
 	}
-	public void returnProcess (Integer cardNo, Integer bookId, Integer branchId) throws SQLException {
-		Connection c = null;
 
-		try {
-			c = conn.connectDatabase();
-			Borrower borrower = new BorrowerDAO(c).readBorrowersById(cardNo).get(0) ;
-			Book book = new BookDAO(c).readBooksById(bookId).get(0);
-			Branch branch = new BranchDAO(c).readBranchsById(branchId).get(0);
 
-			returnBook(borrower, book, branch);
-		} catch (Exception e) {
-
-			c.rollback();
-
-			e.printStackTrace();
-		} finally {
-			c.close();
-		}
-	}
-	public void returnBook(Borrower borrower, Book book, Branch branch) throws SQLException {
+	public Loans returnBook(Loans loan) throws Exception {
 		Connection c = null;
 		try {
 			c = conn.connectDatabase();
+			Borrower borrower = new BorrowerDAO(c).readByCardNoEssentialData(loan.getBorrower().getCardNo());
+			loan.setBorrower(borrower);
+
+			Book book = new BookDAO(c).readBooksById(loan.getBook().getBookId());
+			loan.setBook(book);
+
+			Branch branch = new BranchDAO(c).readBranchsById(loan.getBranch().getBranchId());
+			loan.setBranch(branch);
+			
+			
 			Copies copy = new CopiesDAO(c).readCopyByBranchIDBookID(book, branch).get(0);
 			Integer noOfCopies = copy.getNoOfCopies();
-			
+
 			// updating tbl_book_copies
 			new CopiesDAO(c).updateCopies(book, branch, noOfCopies + 1);
 			LocalDate localDate = LocalDate.now();
-			//updating tbl_book_loans
+			// updating tbl_book_loans
 			new LoansDAO(c).updateDateIn(book, branch, borrower, Date.valueOf(localDate));
-			
-			c.commit();
-			System.out.println(localDate.toString() + " Returned " + book.getTitle() + " to "+ branch.getBranchName());
+			loan.setDateIn(localDate);
+			Loans getDate = new LoansDAO(c).readLoansByBookIdBranchIDCardNo(loan.getBook().getBookId(), loan.getBranch().getBranchId(), loan.getBorrower().getCardNo());
+			loan.setDateOut(getDate.getDateOut());
+			loan.setDueDate(getDate.getDueDate());
+					
+					c.commit();
+			System.out.println(localDate.toString() + " Returned " + book.getTitle() + " to " + branch.getBranchName());
 		} catch (Exception e) {
 			c.rollback();
 			e.printStackTrace();
-			System.err.println("Could not return Book" + book.toString());
-			
+			System.err.println("Could not return Book");
+			throw e;
+
 		}
+		return loan;
 	}
 }

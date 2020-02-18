@@ -33,6 +33,9 @@ public class LoansDAO extends BaseDAO {
 	public List<Loans> readLoans() throws ClassNotFoundException, SQLException {
 		return read("select * from tbl_book_loans", null);
 	}
+	public Loans readLoansByBookIdBranchIDCardNo(Integer bookId,Integer branchId, Integer cardNo ) throws ClassNotFoundException, SQLException {
+		return (Loans) read("select * from tbl_book_loans where bookId = ? and branchId = ? and cardNo =? ", new Object[] {bookId,branchId,cardNo}).get(0);
+	}
 	
 	
 
@@ -43,14 +46,17 @@ public class LoansDAO extends BaseDAO {
 
 		// genre doa, branch dao
 		while (rs.next()) {
-			Loans l = new Loans();
-			l.setBookId(rs.getInt("bookId"));
-			l.setBranchId(rs.getInt("branchId"));
-			l.setCardNo(rs.getInt("cardNo"));
-			l.setDateOut(rs.getDate("dateOut").toLocalDate());
-			l.setDueDate(rs.getDate("dueDate").toLocalDate());
-			l.setDateIn(rs.getDate("dateIn").toLocalDate());
-			loans.add(l);
+			 Loans l = new Loans();
+			 BookDAO bdao = new BookDAO(conn);
+	            l.setBook(bdao.readBooksById(rs.getInt("bookId")));
+	            BranchDAO branch = new BranchDAO(conn);
+	            l.setBranch(branch.readByBranchIdEssentialData(rs.getInt("branchId")));
+	            BorrowerDAO rowdao = new BorrowerDAO(conn);
+	            l.setBorrower(rowdao.readByCardNoEssentialData(rs.getInt("cardNo")));
+	            l.setDateIn(rs.getDate("dateIn").toLocalDate());
+	            l.setDateOut(rs.getDate("dateOut").toLocalDate());
+	            l.setDueDate(rs.getDate("dueDate").toLocalDate());
+	            loans.add(l);
 		}
 		return loans;
 	}
@@ -58,20 +64,7 @@ public class LoansDAO extends BaseDAO {
 	@Override
 	List extractDataFirstLevel(ResultSet rs) throws SQLException, ClassNotFoundException {
 		// TODO Auto-generated method stub
-		List<Loans> loans = new ArrayList<>();
-
-		// genre doa, branch dao
-		while (rs.next()) {
-			Loans l = new Loans();
-			l.setBookId(rs.getInt("bookId"));
-			l.setBranchId(rs.getInt("branchId"));
-			l.setCardNo(rs.getInt("cardNo"));
-			l.setDateOut(rs.getDate("dateOut").toLocalDate());
-			l.setDueDate(rs.getDate("dueDate").toLocalDate());
-			l.setDateIn(rs.getDate("dateIn").toLocalDate());
-			loans.add(l);
-		}
-		return loans;
+		return extractData(rs);
 
 	}
 

@@ -27,8 +27,8 @@ public class BorrowerDAO  extends BaseDAO {
 		return read("select * from tbl_borrower", null);
 	}
 	
-	public List<Borrower> readBorrowersById(Integer cardNo) throws ClassNotFoundException, SQLException {
-		return read("select * from tbl_borrower where cardNo = ?", new Object[] {cardNo});
+	public Borrower readBorrowersById(Integer cardNo) throws ClassNotFoundException, SQLException {
+		return (Borrower) read("select * from tbl_borrower where cardNo = ?", new Object[] {cardNo}).get(0);
 	}
 
 	@Override
@@ -67,5 +67,11 @@ public class BorrowerDAO  extends BaseDAO {
 		}
 		return borrowers;
 
+	}
+
+	public Borrower readByCardNoEssentialData(Integer cardNo) throws ClassNotFoundException, SQLException {
+		// TODO Auto-generated method stub
+		List<Borrower> b = readFirstLevel("select * from tbl_borrower where cardNo = ?", new Object[]{cardNo});
+        return b.get(0);
 	}
 }
