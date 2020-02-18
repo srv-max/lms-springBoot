@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -129,6 +130,49 @@ public class BorrowerService {
 		}
 
 		return listOfBranchs;
+	}
+	
+	public List<Book> getAvailableBooksByBranch(Branch branch) throws SQLException {
+		Connection c = null;
+		List<Book> listOfBooks = new ArrayList<>();
+
+		try {
+			c = conn.connectDatabase();
+			List<Copies> listOfCopies = readCopies();
+			for (int i = 0; i < listOfCopies.size(); i++) {
+				boolean copiesAvailable = listOfCopies.get(i).getNoOfCopies() > 0;
+				boolean branchIdMatches = listOfCopies.get(i).getBranchId() == branch.getBranchId();
+				if (branchIdMatches && copiesAvailable) {
+					listOfBooks.add(listOfCopies.get(i).getBook());
+
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("Could not get borrowers.");
+		} finally {
+			c.close();
+		}
+		return listOfBooks;
+
+	}
+	
+	private List<Copies> readCopies() throws SQLException {
+		Connection c = null;
+		List<Copies> listOfCopies = null;
+		// System.out.println("The size of branch " + listOfBranchs.size());
+		try {
+			c = conn.connectDatabase();
+			listOfCopies = new CopiesDAO(c).readCopies();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("Could not get tbl_book_copies.");
+		} finally {
+			c.close();
+		}
+
+		return listOfCopies;
 	}
 
 }

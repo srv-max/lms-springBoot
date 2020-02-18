@@ -7,15 +7,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ss.lms.entity.Book;
 import com.ss.lms.entity.Branch;
 import com.ss.lms.entity.Loans;
 import com.ss.lms.service.BorrowerService;
@@ -25,8 +28,9 @@ public class BorrowerController {
 	@Autowired
 	BorrowerService borrowerService;
 
-	@RequestMapping(path = "/api/books/checkout", method = RequestMethod.POST, headers = {
-			"Accept=application/json,application/xml" }, produces = { "application/json", "application/xml" })
+	@RequestMapping(path = "/api/books/checkout", method = RequestMethod.POST, consumes = {
+			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }, produces = {
+					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<Loans> checkOutBook(@RequestBody Loans loan) throws SQLException {
 
 		Integer cardNo = null, bookId = null, branchId = null;
@@ -53,8 +57,9 @@ public class BorrowerController {
 		return new ResponseEntity<Loans>(loan, HttpStatus.BAD_REQUEST);
 	}
 
-	@RequestMapping(path = "/api/books/return", method = RequestMethod.POST, headers = {
-			"Accept=application/json,application/xml" }, produces = { "application/json", "application/xml" })
+	@RequestMapping(path = "/api/books/return", method = RequestMethod.POST, consumes = {
+			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }, produces = {
+					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<Loans> returnBook(@RequestBody Loans loan) throws SQLException {
 
 		Integer cardNo = null, bookId = null, branchId = null;
@@ -81,7 +86,8 @@ public class BorrowerController {
 		return new ResponseEntity<Loans>(loan, HttpStatus.BAD_REQUEST);
 	}
 
-	@RequestMapping(path = "/api/branches", produces = { "application/json", "application/xml" })
+	@RequestMapping(path = "/api/branches", produces = { MediaType.APPLICATION_JSON_VALUE,
+			MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<List<Branch>> getBranches() {
 		try {
 			List<Branch> branches = borrowerService.readBranch();
@@ -90,6 +96,26 @@ public class BorrowerController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return new ResponseEntity<List<Branch>>(new ArrayList<Branch>(), HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+
+	}
+
+	@RequestMapping(path = "/api/books/{branchId}", produces = { MediaType.APPLICATION_JSON_VALUE,
+			MediaType.APPLICATION_XML_VALUE })
+	public ResponseEntity<List<Book>> getBooksByBranchID(@PathVariable Integer branchId) {
+		try {
+			Branch branch = new Branch();
+			branch.setBranchId(branchId);
+			List<Book> books = borrowerService.getAvailableBooksByBranch(branch);
+			if (books.isEmpty()) {
+				return new ResponseEntity<List<Book>>(books, HttpStatus.NOT_FOUND);
+			}
+			return new ResponseEntity<List<Book>>(books, HttpStatus.OK);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return new ResponseEntity<List<Book>>(new ArrayList<Book>(), HttpStatus.INTERNAL_SERVER_ERROR);
 
 		}
 
