@@ -1,7 +1,9 @@
 package com.ss.lms.controller;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ss.lms.entity.Branch;
 import com.ss.lms.entity.Loans;
 import com.ss.lms.service.BorrowerService;
 
@@ -76,6 +79,20 @@ public class BorrowerController {
 		}
 
 		return new ResponseEntity<Loans>(loan, HttpStatus.BAD_REQUEST);
+	}
+
+	@RequestMapping(path = "/api/branches", produces = { "application/json", "application/xml" })
+	public ResponseEntity<List<Branch>> getBranches() {
+		try {
+			List<Branch> branches = borrowerService.readBranch();
+			return new ResponseEntity<List<Branch>>(branches, HttpStatus.OK);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return new ResponseEntity<List<Branch>>(new ArrayList<Branch>(), HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+
 	}
 
 }
