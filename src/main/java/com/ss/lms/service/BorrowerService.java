@@ -174,5 +174,21 @@ public class BorrowerService {
 
 		return listOfCopies;
 	}
+	public List<Book> readBooks() throws SQLException {
+
+		Connection c = null;
+		List<Book> listOfBooks = null;
+
+		try {
+			c = conn.connectDatabase();
+			listOfBooks = new BookDAO(c).readBooks();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("Could not get books.");
+		} finally {
+			c.close();
+		}
+		return listOfBooks;
+	}
 
 }

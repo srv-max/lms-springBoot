@@ -100,6 +100,20 @@ public class BorrowerController {
 		}
 
 	}
+	@RequestMapping(path = "/api/books", produces = { MediaType.APPLICATION_JSON_VALUE,
+			MediaType.APPLICATION_XML_VALUE })
+	public ResponseEntity<List<Book>> getBooks() {
+		try {
+			List<Book> books = borrowerService.readBooks();
+			return new ResponseEntity<List<Book>>(books, HttpStatus.OK);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return new ResponseEntity<List<Book>>(new ArrayList<Book>(), HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+
+	}
 
 	@RequestMapping(path = "/api/books/{branchId}", produces = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
