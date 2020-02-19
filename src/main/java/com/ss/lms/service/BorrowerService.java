@@ -19,6 +19,7 @@ import com.ss.lms.entity.Book;
 import com.ss.lms.entity.Borrower;
 import com.ss.lms.entity.Branch;
 import com.ss.lms.entity.Copies;
+
 import com.ss.lms.entity.Loans;
 
 //                              /api/book/checkout /api/bookCheckout
@@ -59,8 +60,8 @@ public class BorrowerService {
 			// updating tbl_book_loans
 			new LoansDAO(c).addLoans(book, branch, borrower, Date.valueOf(localDate), Date.valueOf(dueDate));
 			c.commit();
-			System.out.println("Checked out : " + book.getTitle() + " by " + borrower.getName() + " from "
-					+ branch.getBranchName());
+			//System.out.println("Checked out : " + book.getTitle() + " by " + borrower.getName() + " from "
+			//		+ branch.getBranchName());
 		} catch (Exception e) {
 			c.rollback();
 			e.printStackTrace();
@@ -102,7 +103,7 @@ public class BorrowerService {
 			loan.setDueDate(getDate.getDueDate());
 
 			c.commit();
-			System.out.println(localDate.toString() + " Returned " + book.getTitle() + " to " + branch.getBranchName());
+			//System.out.println(localDate.toString() + " Returned " + book.getTitle() + " to " + branch.getBranchName());
 		} catch (Exception e) {
 			c.rollback();
 			e.printStackTrace();
@@ -174,6 +175,7 @@ public class BorrowerService {
 
 		return listOfCopies;
 	}
+	
 	public List<Book> readBooks() throws SQLException {
 
 		Connection c = null;

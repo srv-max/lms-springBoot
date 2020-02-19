@@ -28,7 +28,7 @@ public class BorrowerController {
 	@Autowired
 	BorrowerService borrowerService;
 
-	@RequestMapping(path = "/api/books/checkout", method = RequestMethod.POST, consumes = {
+	@RequestMapping(path = "/borrower/books/checkout", method = RequestMethod.POST, consumes = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }, produces = {
 					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<Loans> checkOutBook(@RequestBody Loans loan) throws SQLException {
@@ -57,8 +57,7 @@ public class BorrowerController {
 		return new ResponseEntity<Loans>(loan, HttpStatus.BAD_REQUEST);
 	}
 
-	@RequestMapping(path = "/api/books/return", method = RequestMethod.POST, consumes = {
-			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }, produces = {
+	@RequestMapping(path = "/borrower/books/return", method = RequestMethod.POST,  produces = {
 					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<Loans> returnBook(@RequestBody Loans loan) throws SQLException {
 
@@ -86,7 +85,7 @@ public class BorrowerController {
 		return new ResponseEntity<Loans>(loan, HttpStatus.BAD_REQUEST);
 	}
 
-	@RequestMapping(path = "/api/branches", produces = { MediaType.APPLICATION_JSON_VALUE,
+	@RequestMapping(path = "/borrower/branches",method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<List<Branch>> getBranches() {
 		try {
@@ -100,7 +99,7 @@ public class BorrowerController {
 		}
 
 	}
-	@RequestMapping(path = "/api/books", produces = { MediaType.APPLICATION_JSON_VALUE,
+	@RequestMapping(path = "/borrower/books", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<List<Book>> getBooks() {
 		try {
@@ -115,7 +114,7 @@ public class BorrowerController {
 
 	}
 
-	@RequestMapping(path = "/api/books/{branchId}", produces = { MediaType.APPLICATION_JSON_VALUE,
+	@RequestMapping(path = "/borrower/books/{branchId}",method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<List<Book>> getBooksByBranchID(@PathVariable Integer branchId) {
 		try {

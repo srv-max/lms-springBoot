@@ -11,6 +11,7 @@ import com.ss.lms.entity.Book;
 import com.ss.lms.entity.Branch;
 import com.ss.lms.entity.Copies;
 
+
 public class CopiesDAO extends BaseDAO <Copies> {
 
 	public CopiesDAO(Connection conn) {

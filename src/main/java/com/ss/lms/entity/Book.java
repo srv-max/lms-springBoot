@@ -13,7 +13,7 @@ public class Book implements Serializable{
 	private Publisher publisher;
 	private List<Author> authors;
 	private List<Genre> genres;
-	private List<Branch> libraryBranches;
+	//private List<Branch> libraryBranches;
 
 	public List<Genre> getGenres() {
 		return genres;
@@ -23,13 +23,12 @@ public class Book implements Serializable{
 		this.genres = genres;
 	}
 
-	public List<Branch> getLibraryBranches() {
-		return libraryBranches;
-	}
-
-	public void setLibraryBranches(List<Branch> libraryBranches) {
-		this.libraryBranches = libraryBranches;
-	}
+	/*
+	 * public List<Branch> getLibraryBranches() { return libraryBranches; }
+	 * 
+	 * public void setLibraryBranches(List<Branch> libraryBranches) {
+	 * this.libraryBranches = libraryBranches; }
+	 */
 
 	// list of genres, branches,
 	public Integer getBookId() {

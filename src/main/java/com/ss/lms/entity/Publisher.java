@@ -12,7 +12,7 @@ public class Publisher implements Serializable {
 	private String publisherName;
 	private String publisherAddress;
 	private String publisherPhone;
-	private List<Book> books;
+	//private List<Book> books;
 
 	public Integer getPublisherId() {
 		return publisherId;
@@ -46,11 +46,9 @@ public class Publisher implements Serializable {
 		this.publisherPhone = publisherPhone;
 	}
 
-	public List<Book> getBooks() {
-		return books;
-	}
-
-	public void setBooks(List<Book> books) {
-		this.books = books;
-	}
+	/*
+	 * public List<Book> getBooks() { return books; }
+	 * 
+	 * public void setBooks(List<Book> books) { this.books = books; }
+	 */
 }

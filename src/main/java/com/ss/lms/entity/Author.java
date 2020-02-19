@@ -5,7 +5,7 @@ import java.util.List;
 public class Author {
 	private Integer authorId;
 	private String authorName;
-	private List<Book> books; // many to many
+	//private List<Book> books; // many to many
 
 	public Integer getAuthorId() {
 		return authorId;
@@ -23,11 +23,9 @@ public class Author {
 		this.authorName = authorName;
 	}
 
-	public List<Book> getBooks() {
-		return books;
-	}
-
-	public void setBooks(List<Book> books) {
-		this.books = books;
-	}
+	/*
+	 * public List<Book> getBooks() { return books; }
+	 * 
+	 * public void setBooks(List<Book> books) { this.books = books; }
+	 */
 }
