@@ -6,15 +6,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.ss.lms.entity.Genre;
 
-
+@Component
 public class GenresDAO extends BaseDAO  {
 
-	public GenresDAO(Connection conn) {
-		super(conn);
-		// TODO Auto-generated constructor stub
-	}
+	/*
+	 * public GenresDAO(Connection conn) { super(conn); // TODO Auto-generated
+	 * constructor stub }
+	 */
 
 	@Override
 	List extractData(ResultSet rs) throws SQLException, ClassNotFoundException {

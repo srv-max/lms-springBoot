@@ -25,6 +25,7 @@ import com.ss.lms.service.BorrowerService;
 
 @RestController
 public class BorrowerController {
+	
 	@Autowired
 	BorrowerService borrowerService;
 
@@ -107,7 +108,7 @@ public class BorrowerController {
 			return new ResponseEntity<List<Book>>(books, HttpStatus.OK);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 			return new ResponseEntity<List<Book>>(new ArrayList<Book>(), HttpStatus.INTERNAL_SERVER_ERROR);
 
 		}
@@ -127,7 +128,7 @@ public class BorrowerController {
 			return new ResponseEntity<List<Book>>(books, HttpStatus.OK);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 			return new ResponseEntity<List<Book>>(new ArrayList<Book>(), HttpStatus.INTERNAL_SERVER_ERROR);
 
 		}

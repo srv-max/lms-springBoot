@@ -11,15 +11,16 @@ import org.springframework.stereotype.Component;
 import com.ss.lms.entity.Book;
 import com.ss.lms.entity.Publisher;
 
+@Component
 public class PublisherDAO extends BaseDAO<Publisher> {
 
-	public PublisherDAO(Connection conn) {
-		super(conn);
-		// TODO Auto-generated constructor stub
-	}
+	/*
+	 * public PublisherDAO(Connection conn) { super(conn); // TODO Auto-generated
+	 * constructor stub }
+	 */
 
-	public Publisher readPublisherById(Integer publisherId) throws ClassNotFoundException, SQLException {
-		List<Publisher> publisher = read("select * from tbl_publisher where publisherId = ?",
+	public Publisher readPublisherById(Connection conn, Integer publisherId) throws ClassNotFoundException, SQLException {
+		List<Publisher> publisher = read(conn, "select * from tbl_publisher where publisherId = ?",
 				new Object[] { publisherId });
 		if (publisher.isEmpty()) {
 			return null;

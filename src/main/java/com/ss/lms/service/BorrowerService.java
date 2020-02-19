@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ss.lms.DAO.BookDAO;
@@ -25,10 +26,27 @@ import com.ss.lms.entity.Loans;
 //                              /api/book/checkout /api/bookCheckout
 @Component
 public class BorrowerService {
-	ConnectionUtil conn;
+	
+	@Autowired
+	ConnectionUtil connUtil;
 
+	@Autowired
+	BorrowerDAO brDAO;
+	
+	@Autowired
+	CopiesDAO cDAO;
+	
+	@Autowired
+	BookDAO bDAO;
+	
+	@Autowired
+	BranchDAO branchDAO;
+	
+	@Autowired
+	LoansDAO loanDAO;
+	
 	public BorrowerService() throws ClassNotFoundException {
-		conn = new ConnectionUtil();
+		
 
 	}
 
@@ -36,29 +54,31 @@ public class BorrowerService {
 		Connection c = null;
 
 		try {
-			c = conn.connectDatabase();
-
-			Borrower borrower = new BorrowerDAO(c).readByCardNoEssentialData(loan.getBorrower().getCardNo());
+			c = connUtil.connectDatabase();
+			
+			
+			
+			Borrower borrower = brDAO.readByCardNoEssentialData(c,loan.getBorrower().getCardNo());
 			loan.setBorrower(borrower);
 
-			Book book = new BookDAO(c).readBooksById(loan.getBook().getBookId());
+			Book book = bDAO.readBooksById(c,loan.getBook().getBookId());
 			loan.setBook(book);
 
-			Branch branch = new BranchDAO(c).readBranchsById(loan.getBranch().getBranchId());
+			Branch branch = branchDAO.readBranchsById(c,loan.getBranch().getBranchId());
 			loan.setBranch(branch);
 
-			Copies copy = new CopiesDAO(c).readCopyByBranchIDBookID(book, branch).get(0);
+			Copies copy = cDAO.readCopyByBranchIDBookID(c,book, branch).get(0);
 			Integer noOfCopies = copy.getNoOfCopies();
 
 			// updating tbl_book_copies
-			new CopiesDAO(c).updateCopies(book, branch, noOfCopies - 1);
+			cDAO.updateCopies(c,book, branch, noOfCopies - 1);
 
 			LocalDate localDate = LocalDate.now();
 			LocalDate dueDate = localDate.plusDays(7);
 			loan.setDateOut(localDate);
 			loan.setDueDate(dueDate);
 			// updating tbl_book_loans
-			new LoansDAO(c).addLoans(book, branch, borrower, Date.valueOf(localDate), Date.valueOf(dueDate));
+			loanDAO.addLoans(c,book, branch, borrower, Date.valueOf(localDate), Date.valueOf(dueDate));
 			c.commit();
 			//System.out.println("Checked out : " + book.getTitle() + " by " + borrower.getName() + " from "
 			//		+ branch.getBranchName());
@@ -78,27 +98,30 @@ public class BorrowerService {
 	public Loans returnBook(Loans loan) throws Exception {
 		Connection c = null;
 		try {
-			c = conn.connectDatabase();
-			Borrower borrower = new BorrowerDAO(c).readByCardNoEssentialData(loan.getBorrower().getCardNo());
+			c = connUtil.connectDatabase();
+			Borrower borrower = brDAO.readByCardNoEssentialData(c,loan.getBorrower().getCardNo());
 			loan.setBorrower(borrower);
 
-			Book book = new BookDAO(c).readBooksById(loan.getBook().getBookId());
+			Book book = bDAO.readBooksById(c,loan.getBook().getBookId());
 			loan.setBook(book);
 
-			Branch branch = new BranchDAO(c).readBranchsById(loan.getBranch().getBranchId());
+			Branch branch = branchDAO.readBranchsById(c,loan.getBranch().getBranchId());
 			loan.setBranch(branch);
 
-			Copies copy = new CopiesDAO(c).readCopyByBranchIDBookID(book, branch).get(0);
+			Copies copy = cDAO.readCopyByBranchIDBookID(c,book, branch).get(0);
 			Integer noOfCopies = copy.getNoOfCopies();
 
 			// updating tbl_book_copies
-			new CopiesDAO(c).updateCopies(book, branch, noOfCopies + 1);
+			cDAO.updateCopies(c,book, branch, noOfCopies + 1);
 			LocalDate localDate = LocalDate.now();
+			
 			// updating tbl_book_loans
-			new LoansDAO(c).updateDateIn(book, branch, borrower, Date.valueOf(localDate));
+			loanDAO.updateDateIn(c,book, branch, borrower, Date.valueOf(localDate));
 			loan.setDateIn(localDate);
-			Loans getDate = new LoansDAO(c).readLoansByBookIdBranchIDCardNo(loan.getBook().getBookId(),
+			
+			Loans getDate = loanDAO.readLoansByBookIdBranchIDCardNo(c,loan.getBook().getBookId(),
 					loan.getBranch().getBranchId(), loan.getBorrower().getCardNo());
+			
 			loan.setDateOut(getDate.getDateOut());
 			loan.setDueDate(getDate.getDueDate());
 
@@ -120,11 +143,11 @@ public class BorrowerService {
 		List<Branch> listOfBranchs = null;
 		// System.out.println("The size of branch " + listOfBranchs.size());
 		try {
-			c = conn.connectDatabase();
-			listOfBranchs = new BranchDAO(c).readBranchs();
+			c = connUtil.connectDatabase();
+			listOfBranchs = branchDAO.readBranchs(c);
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("Could not get branchs.");
+			//e.printStackTrace();
+			//System.err.println("Could not get branchs.");
 			throw e;
 		} finally {
 			c.close();
@@ -138,7 +161,7 @@ public class BorrowerService {
 		List<Book> listOfBooks = new ArrayList<>();
 
 		try {
-			c = conn.connectDatabase();
+			c = connUtil.connectDatabase();
 			List<Copies> listOfCopies = readCopies();
 			for (int i = 0; i < listOfCopies.size(); i++) {
 				boolean copiesAvailable = listOfCopies.get(i).getNoOfCopies() > 0;
@@ -150,8 +173,8 @@ public class BorrowerService {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("Could not get borrowers.");
+			//e.printStackTrace();
+			//System.err.println("Could not get borrowers.");
 		} finally {
 			c.close();
 		}
@@ -160,12 +183,13 @@ public class BorrowerService {
 	}
 	
 	private List<Copies> readCopies() throws SQLException {
+		
 		Connection c = null;
 		List<Copies> listOfCopies = null;
 		// System.out.println("The size of branch " + listOfBranchs.size());
 		try {
-			c = conn.connectDatabase();
-			listOfCopies = new CopiesDAO(c).readCopies();
+			c = connUtil.connectDatabase();
+			listOfCopies = cDAO.readCopies(c);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println("Could not get tbl_book_copies.");
@@ -182,8 +206,8 @@ public class BorrowerService {
 		List<Book> listOfBooks = null;
 
 		try {
-			c = conn.connectDatabase();
-			listOfBooks = new BookDAO(c).readBooks();
+			c = connUtil.connectDatabase();
+			listOfBooks = bDAO.readBooks(c);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println("Could not get books.");
