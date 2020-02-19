@@ -84,8 +84,8 @@ public class BorrowerService {
 			//		+ branch.getBranchName());
 		} catch (Exception e) {
 			c.rollback();
-			e.printStackTrace();
-			System.err.println("Could not checkout Book");
+			//e.printStackTrace();
+			//System.err.println("Could not checkout Book");
 			throw e;
 
 		} finally {
@@ -129,8 +129,8 @@ public class BorrowerService {
 			//System.out.println(localDate.toString() + " Returned " + book.getTitle() + " to " + branch.getBranchName());
 		} catch (Exception e) {
 			c.rollback();
-			e.printStackTrace();
-			System.err.println("Could not return Book");
+			//e.printStackTrace();
+			//System.err.println("Could not return Book");
 			throw e;
 
 		}
@@ -191,8 +191,8 @@ public class BorrowerService {
 			c = connUtil.connectDatabase();
 			listOfCopies = cDAO.readCopies(c);
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("Could not get tbl_book_copies.");
+			//e.printStackTrace();
+			//System.err.println("Could not get tbl_book_copies.");
 		} finally {
 			c.close();
 		}
@@ -209,8 +209,8 @@ public class BorrowerService {
 			c = connUtil.connectDatabase();
 			listOfBooks = bDAO.readBooks(c);
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("Could not get books.");
+			//e.printStackTrace();
+			//System.err.println("Could not get books.");
 		} finally {
 			c.close();
 		}

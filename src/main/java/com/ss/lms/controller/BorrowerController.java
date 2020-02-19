@@ -115,7 +115,7 @@ public class BorrowerController {
 
 	}
 
-	@RequestMapping(path = "/borrower/books/{branchId}",method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE,
+	@RequestMapping(path = "/borrower/{branchId}/books",method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<List<Book>> getBooksByBranchID(@PathVariable Integer branchId) {
 		try {
