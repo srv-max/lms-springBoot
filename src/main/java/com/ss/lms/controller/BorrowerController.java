@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -19,15 +20,21 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ss.lms.entity.Book;
+import com.ss.lms.entity.Borrower;
 import com.ss.lms.entity.Branch;
 import com.ss.lms.entity.Loans;
 import com.ss.lms.service.BorrowerService;
+
+
 
 @RestController
 public class BorrowerController {
 	
 	@Autowired
 	BorrowerService borrowerService;
+	
+	@Autowired
+	Branch branch;
 
 	@RequestMapping(path = "/borrower/books/checkout", method = RequestMethod.POST, consumes = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }, produces = {
@@ -35,7 +42,7 @@ public class BorrowerController {
 	public ResponseEntity<Loans> checkOutBook(@RequestBody Loans loan) throws SQLException {
 
 		Integer cardNo = null, bookId = null, branchId = null;
-
+		//Optional<Borrower> borrower = null;
 		try {
 			cardNo = loan.getBorrower().getCardNo();
 			bookId = loan.getBook().getBookId();
@@ -93,8 +100,7 @@ public class BorrowerController {
 			List<Branch> branches = borrowerService.readBranch();
 			return new ResponseEntity<List<Branch>>(branches, HttpStatus.OK);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
 			return new ResponseEntity<List<Branch>>(new ArrayList<Branch>(), HttpStatus.INTERNAL_SERVER_ERROR);
 
 		}
@@ -107,8 +113,7 @@ public class BorrowerController {
 			List<Book> books = borrowerService.readBooks();
 			return new ResponseEntity<List<Book>>(books, HttpStatus.OK);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
+			
 			return new ResponseEntity<List<Book>>(new ArrayList<Book>(), HttpStatus.INTERNAL_SERVER_ERROR);
 
 		}
@@ -119,7 +124,7 @@ public class BorrowerController {
 			MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<List<Book>> getBooksByBranchID(@PathVariable Integer branchId) {
 		try {
-			Branch branch = new Branch();
+			
 			branch.setBranchId(branchId);
 			List<Book> books = borrowerService.getAvailableBooksByBranch(branch);
 			if (books.isEmpty()) {
@@ -127,8 +132,7 @@ public class BorrowerController {
 			}
 			return new ResponseEntity<List<Book>>(books, HttpStatus.OK);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
+			
 			return new ResponseEntity<List<Book>>(new ArrayList<Book>(), HttpStatus.INTERNAL_SERVER_ERROR);
 
 		}

@@ -23,7 +23,7 @@ import com.ss.lms.entity.Copies;
 
 import com.ss.lms.entity.Loans;
 
-//                              /api/book/checkout /api/bookCheckout
+
 @Component
 public class BorrowerService {
 	
@@ -80,12 +80,10 @@ public class BorrowerService {
 			// updating tbl_book_loans
 			loanDAO.addLoans(c,book, branch, borrower, Date.valueOf(localDate), Date.valueOf(dueDate));
 			c.commit();
-			//System.out.println("Checked out : " + book.getTitle() + " by " + borrower.getName() + " from "
-			//		+ branch.getBranchName());
+			
 		} catch (Exception e) {
 			c.rollback();
-			//e.printStackTrace();
-			//System.err.println("Could not checkout Book");
+			
 			throw e;
 
 		} finally {
@@ -126,11 +124,10 @@ public class BorrowerService {
 			loan.setDueDate(getDate.getDueDate());
 
 			c.commit();
-			//System.out.println(localDate.toString() + " Returned " + book.getTitle() + " to " + branch.getBranchName());
+			
 		} catch (Exception e) {
 			c.rollback();
-			//e.printStackTrace();
-			//System.err.println("Could not return Book");
+			
 			throw e;
 
 		}
@@ -141,13 +138,12 @@ public class BorrowerService {
 
 		Connection c = null;
 		List<Branch> listOfBranchs = null;
-		// System.out.println("The size of branch " + listOfBranchs.size());
+
 		try {
 			c = connUtil.connectDatabase();
 			listOfBranchs = branchDAO.readBranchs(c);
 		} catch (Exception e) {
-			//e.printStackTrace();
-			//System.err.println("Could not get branchs.");
+			
 			throw e;
 		} finally {
 			c.close();
@@ -173,8 +169,7 @@ public class BorrowerService {
 			}
 
 		} catch (Exception e) {
-			//e.printStackTrace();
-			//System.err.println("Could not get borrowers.");
+		
 		} finally {
 			c.close();
 		}
@@ -191,8 +186,7 @@ public class BorrowerService {
 			c = connUtil.connectDatabase();
 			listOfCopies = cDAO.readCopies(c);
 		} catch (Exception e) {
-			//e.printStackTrace();
-			//System.err.println("Could not get tbl_book_copies.");
+		
 		} finally {
 			c.close();
 		}
@@ -209,8 +203,7 @@ public class BorrowerService {
 			c = connUtil.connectDatabase();
 			listOfBooks = bDAO.readBooks(c);
 		} catch (Exception e) {
-			//e.printStackTrace();
-			//System.err.println("Could not get books.");
+			
 		} finally {
 			c.close();
 		}
