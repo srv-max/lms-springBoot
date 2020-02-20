@@ -3,6 +3,8 @@ package com.ss.lms.entity;
 import java.io.Serializable;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+@Component
 public class Publisher implements Serializable {
 	/**
 	 * 

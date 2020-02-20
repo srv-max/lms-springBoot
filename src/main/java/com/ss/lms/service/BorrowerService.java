@@ -45,28 +45,22 @@ public class BorrowerService {
 	@Autowired
 	LoansDAO loanDAO;
 	
+	@Autowired
+	Loans loan;
+	
 	public BorrowerService() throws ClassNotFoundException {
 		
 
 	}
 
-	public Loans checkOutBook(Loans loan) throws Exception {
+	public Loans checkOutBook(Branch branch, Book book, Borrower borrower ) throws Exception {
 		Connection c = null;
-
+		
 		try {
 			c = connUtil.connectDatabase();
-			
-			
-			
-			Borrower borrower = brDAO.readByCardNoEssentialData(c,loan.getBorrower().getCardNo());
 			loan.setBorrower(borrower);
-
-			Book book = bDAO.readBooksById(c,loan.getBook().getBookId());
-			loan.setBook(book);
-
-			Branch branch = branchDAO.readBranchsById(c,loan.getBranch().getBranchId());
 			loan.setBranch(branch);
-
+			loan.setBook(book);
 			Copies copy = cDAO.readCopyByBranchIDBookID(c,book, branch).get(0);
 			Integer noOfCopies = copy.getNoOfCopies();
 
@@ -93,17 +87,13 @@ public class BorrowerService {
 
 	}
 
-	public Loans returnBook(Loans loan) throws Exception {
+	public Loans returnBook(Branch branch, Book book, Borrower borrower) throws Exception {
 		Connection c = null;
 		try {
 			c = connUtil.connectDatabase();
-			Borrower borrower = brDAO.readByCardNoEssentialData(c,loan.getBorrower().getCardNo());
+			
 			loan.setBorrower(borrower);
-
-			Book book = bDAO.readBooksById(c,loan.getBook().getBookId());
 			loan.setBook(book);
-
-			Branch branch = branchDAO.readBranchsById(c,loan.getBranch().getBranchId());
 			loan.setBranch(branch);
 
 			Copies copy = cDAO.readCopyByBranchIDBookID(c,book, branch).get(0);
