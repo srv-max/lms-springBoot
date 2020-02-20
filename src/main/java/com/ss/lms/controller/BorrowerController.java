@@ -60,7 +60,7 @@ public class BorrowerController {
 	BranchDAO branchDAO;
 	
 	@Autowired
-	LoansDAO loanDAO;
+	LoansDAO loansDAO;
 
 	@RequestMapping(path = "borrower/{cardNo}/library/{branchId}/books/{bookId}/checkout", method = RequestMethod.POST, produces = {
 					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
@@ -74,8 +74,9 @@ public class BorrowerController {
 		
 		Connection c = null;
 		try {
-			c = connUtil.connectDatabase();
 			
+			try {
+			c = connUtil.connectDatabase();
 			borrower = brDAO.readByCardNoEssentialData(c,cardNo);
 			book = bDAO.readBooksById(c,bookId);
 			branch = branchDAO.readBranchsById(c,branchId);
@@ -86,6 +87,11 @@ public class BorrowerController {
 			if (noOfCopies == 0) {
 				return new ResponseEntity<Loans>(HttpStatus.NOT_FOUND);
 			}
+			}
+			catch (Exception e) {
+				return new ResponseEntity<Loans>(HttpStatus.NOT_FOUND);
+			}
+			
 			
 		}
 		catch (Exception e) {
@@ -96,7 +102,7 @@ public class BorrowerController {
 			Loans l = null;
 			try {
 				l = borrowerService.checkOutBook(branch,book,borrower);
-				return new ResponseEntity<Loans>(l, HttpStatus.OK);
+				return new ResponseEntity<Loans>(l, HttpStatus.ACCEPTED);
 			} catch (Exception e) {
 				return new ResponseEntity<Loans>(l, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
@@ -124,19 +130,19 @@ public class BorrowerController {
 			book = bDAO.readBooksById(c,bookId);
 			branch = branchDAO.readBranchsById(c,branchId);
 			
-			Loans readLoan = loanDAO.readLoansByBookIdBranchIDCardNo(c,book.getBookId(),
-					branch.getBranchId(), borrower.getCardNo());
+			Loans readLoan = loansDAO.readLoansByBookIdBranchIDCardNo(c,book.getBookId(),
+					branch.getBranchId(), borrower.getCardNo()).get(0);
 		
 		}
 		catch (Exception e) {
 			return new ResponseEntity<Loans>(HttpStatus.NOT_FOUND);
 		}
 
-		if (!(cardNo == null || bookId == null || branchId == null)) {
+		if (!(borrower == null || book == null || branch == null)) {
 			Loans l = null;
 			try {
 				l = borrowerService.returnBook(branch, book, borrower);
-				return new ResponseEntity<Loans>(l, HttpStatus.OK);
+				return new ResponseEntity<Loans>(l, HttpStatus.ACCEPTED);
 			} catch (Exception e) {
 				return new ResponseEntity<Loans>(l, HttpStatus.INTERNAL_SERVER_ERROR);
 			}

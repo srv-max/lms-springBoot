@@ -108,7 +108,7 @@ public class BorrowerService {
 			loan.setDateIn(localDate);
 			
 			Loans getDate = loanDAO.readLoansByBookIdBranchIDCardNo(c,loan.getBook().getBookId(),
-					loan.getBranch().getBranchId(), loan.getBorrower().getCardNo());
+					loan.getBranch().getBranchId(), loan.getBorrower().getCardNo()).get(0);
 			
 			loan.setDateOut(getDate.getDateOut());
 			loan.setDueDate(getDate.getDueDate());

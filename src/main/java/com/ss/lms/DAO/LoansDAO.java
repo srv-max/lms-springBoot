@@ -50,8 +50,8 @@ public class LoansDAO extends BaseDAO {
 	public List<Loans> readLoans(Connection conn) throws ClassNotFoundException, SQLException {
 		return read(conn, "select * from tbl_book_loans", null);
 	}
-	public Loans readLoansByBookIdBranchIDCardNo(Connection conn, Integer bookId,Integer branchId, Integer cardNo ) throws ClassNotFoundException, SQLException {
-		return (Loans) read(conn, "select * from tbl_book_loans where bookId = ? and branchId = ? and cardNo =? ", new Object[] {bookId,branchId,cardNo}).get(0);
+	public List<Loans> readLoansByBookIdBranchIDCardNo(Connection conn, Integer bookId,Integer branchId, Integer cardNo ) throws ClassNotFoundException, SQLException {
+		return read(conn, "select * from tbl_book_loans where bookId = ? and branchId = ? and cardNo =? ", new Object[] {bookId,branchId,cardNo});
 	}
 	
 	
