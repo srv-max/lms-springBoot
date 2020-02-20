@@ -3,6 +3,8 @@ package com.ss.lms.entity;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import org.springframework.stereotype.Component;
+@Component
 public class Loans implements Serializable {
 	/**
 	 * 

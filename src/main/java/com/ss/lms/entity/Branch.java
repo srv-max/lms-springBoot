@@ -2,6 +2,9 @@ package com.ss.lms.entity;
 
 import java.io.Serializable;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class Branch implements Serializable {
 	/**
 	 * 

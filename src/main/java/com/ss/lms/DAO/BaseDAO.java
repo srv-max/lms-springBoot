@@ -9,13 +9,13 @@ import java.util.List;
 
 public abstract class BaseDAO<T> {
 	
-	protected static Connection conn = null;
+	//protected static Connection conn = null;
 	
-	public BaseDAO(Connection conn){
-		BaseDAO.conn = conn;
-	}
+	/*
+	 * public BaseDAO(Connection conn){ BaseDAO.conn = conn; }
+	 */
 	
-	protected void save(String sql, Object[] vals) throws SQLException, ClassNotFoundException{
+	protected void save(Connection conn, String sql, Object[] vals) throws SQLException, ClassNotFoundException{
 		PreparedStatement pstmt = conn.prepareStatement(sql);
 		if(vals!=null){
 			int index = 1;
@@ -27,7 +27,7 @@ public abstract class BaseDAO<T> {
 		pstmt.executeUpdate();
 	}
 	
-	protected Integer saveReturnPk(String sql, Object[] vals) throws SQLException, ClassNotFoundException{
+	protected Integer saveReturnPk(Connection conn,String sql, Object[] vals) throws SQLException, ClassNotFoundException{
 		
 		PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 		if(vals!=null){
@@ -46,7 +46,7 @@ public abstract class BaseDAO<T> {
 		return null;
 	}
 	
-	protected List<T> read(String sql, Object[] vals) throws SQLException, ClassNotFoundException{
+	protected List<T> read(Connection conn, String sql, Object[] vals) throws SQLException, ClassNotFoundException{
 		PreparedStatement pstmt = conn.prepareStatement(sql);
 		if(vals!=null){
 			int index = 1;
@@ -61,7 +61,7 @@ public abstract class BaseDAO<T> {
 	
 	abstract List<T> extractData(ResultSet rs) throws SQLException, ClassNotFoundException;
 	
-	protected List<T> readFirstLevel(String sql, Object[] vals) throws SQLException, ClassNotFoundException{
+	protected List<T> readFirstLevel(Connection conn, String sql, Object[] vals) throws SQLException, ClassNotFoundException{
 		PreparedStatement pstmt = conn.prepareStatement(sql);
 		if(vals!=null){
 			int index = 1;

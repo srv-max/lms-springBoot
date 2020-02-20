@@ -3,9 +3,7 @@ package com.ss.lms.entity;
 import java.io.Serializable;
 
 public class Copies implements Serializable {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -5459027020967892222L;
 	private Integer noOfCopies;
 	private Integer bookId;

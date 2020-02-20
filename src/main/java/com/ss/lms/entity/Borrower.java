@@ -12,7 +12,7 @@ public class Borrower implements Serializable {
 	private String name;
 	private String address;
 	private String phone;
-	private List<Book> availableBooks;
+	//private List<Book> availableBooks;
 	public Integer getCardNo() {
 		return cardNo;
 	}
@@ -45,11 +45,10 @@ public class Borrower implements Serializable {
 		this.phone = phone;
 	}
 
-	public List<Book> getAvailableBooks() {
-		return availableBooks;
-	}
-
-	public void setAvailableBooks(List<Book> availableBooks) {
-		this.availableBooks = availableBooks;
-	}
+	/*
+	 * public List<Book> getAvailableBooks() { return availableBooks; }
+	 * 
+	 * public void setAvailableBooks(List<Book> availableBooks) {
+	 * this.availableBooks = availableBooks; }
+	 */
 }
