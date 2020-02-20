@@ -44,23 +44,7 @@ public class BorrowerController {
 	@Autowired
 	Branch branch;
 	
-	@Autowired
-	ConnectionUtil connUtil;
-
-	@Autowired
-	BorrowerDAO brDAO;
 	
-	@Autowired
-	CopiesDAO cDAO;
-	
-	@Autowired
-	BookDAO bDAO;
-	
-	@Autowired
-	BranchDAO branchDAO;
-	
-	@Autowired
-	LoansDAO loansDAO;
 
 	@RequestMapping(path = "borrower/{cardNo}/library/{branchId}/books/{bookId}/checkout", method = RequestMethod.POST, produces = {
 					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
@@ -72,16 +56,16 @@ public class BorrowerController {
 		Book book = null;
 		Branch branch =null;
 		
-		Connection c = null;
+	
 		try {
 			
 			try {
-			c = connUtil.connectDatabase();
-			borrower = brDAO.readByCardNoEssentialData(c,cardNo);
-			book = bDAO.readBooksById(c,bookId);
-			branch = branchDAO.readBranchsById(c,branchId);
 			
-			Copies copy = cDAO.readCopyByBranchIDBookID(c,book, branch).get(0);
+			borrower = borrowerService.readByCardNoEssentialData (cardNo);
+			book = borrowerService.readBooksById(bookId);
+			branch = borrowerService.readBranchsById(branchId);
+			
+			Copies copy = borrowerService.readCopyByBranchIDBookID(book, branch);
 			Integer noOfCopies = copy.getNoOfCopies();
 			
 			if (noOfCopies == 0) {
@@ -120,28 +104,31 @@ public class BorrowerController {
 
 		Borrower borrower =null;
 		Book book = null;
-		Branch branch =null;
+		Branch br =null;
 		
-		Connection c = null;
 		try {
-			c = connUtil.connectDatabase();
 			
-			borrower = brDAO.readByCardNoEssentialData(c,cardNo);
-			book = bDAO.readBooksById(c,bookId);
-			branch = branchDAO.readBranchsById(c,branchId);
 			
-			Loans readLoan = loansDAO.readLoansByBookIdBranchIDCardNo(c,book.getBookId(),
-					branch.getBranchId(), borrower.getCardNo()).get(0);
+			borrower = borrowerService.readByCardNoEssentialData(cardNo);
+			book = borrowerService.readBooksById(bookId);
+			br = borrowerService.readBranchsById(branchId);
+			
+			
+			
+			Loans readLoan = borrowerService.readLoansByBookIdBranchIDCardNo(bookId,
+					branchId, cardNo);
 		
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<Loans>(HttpStatus.NOT_FOUND);
 		}
 
-		if (!(borrower == null || book == null || branch == null)) {
+		if (!(borrower == null || book == null || br == null)) {
+		
 			Loans l = null;
 			try {
-				l = borrowerService.returnBook(branch, book, borrower);
+				l = borrowerService.returnBook(br, book, borrower);
 				return new ResponseEntity<Loans>(l, HttpStatus.ACCEPTED);
 			} catch (Exception e) {
 				return new ResponseEntity<Loans>(l, HttpStatus.INTERNAL_SERVER_ERROR);
