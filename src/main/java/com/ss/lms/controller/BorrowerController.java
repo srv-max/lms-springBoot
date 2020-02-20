@@ -46,7 +46,7 @@ public class BorrowerController {
 	
 	
 
-	@RequestMapping(path = "borrower/{cardNo}/library/{branchId}/books/{bookId}/checkout", method = RequestMethod.POST, produces = {
+	@RequestMapping(path = "borrower/{cardNo}/library/{branchId}/books/{bookId}:checkout", method = RequestMethod.POST, produces = {
 					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<Loans> checkOutBook(@PathVariable("cardNo") Integer cardNo,
             @PathVariable("branchId") Integer branchId,
@@ -96,7 +96,7 @@ public class BorrowerController {
 		return new ResponseEntity<Loans>(HttpStatus.BAD_REQUEST);
 	}
 
-	@RequestMapping(path = "borrower/{cardNo}/library/{branchId}/books/{bookId}/return", method = RequestMethod.POST,  produces = {
+	@RequestMapping(path = "borrower/{cardNo}/library/{branchId}/books/{bookId}:return", method = RequestMethod.POST,  produces = {
 					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<Loans> returnBook(@PathVariable("cardNo") Integer cardNo,
             @PathVariable("branchId") Integer branchId,
