@@ -33,8 +33,7 @@ public class TestDBConnection {
 	      boolean database = connectionUtil.connectDatabase().createStatement().execute("select * from tbl_author");
 	    
 	    		  Assertions.assertEquals(true,database);
-	      Mockito.verify(mockConnection.createStatement(),
-	         Mockito.times(1));
+	     
 	  }
 	
 	
