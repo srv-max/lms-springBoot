@@ -58,9 +58,9 @@ public class CopiesDAO extends BaseDAO <Copies> {
 			c.setBook((Book)(bDAO.readFirstLevel(conn, "select * from tbl_book where bookId IN "
 					+ "(select bookId from tbl_book_copies where bookId = ?)",
 					new Object[]{c.getBookId()}).get(0)));
-			c.setLibraryBranch((Branch)(brDAO.readFirstLevel(conn,"select * from tbl_library_branch where branchId IN "
-					+ "(select branchId from tbl_book_copies where branchId = ?)",
-					new Object[]{c.getBranchId()}).get(0)));
+			//c.setLibraryBranch((Branch)(brDAO.readFirstLevel(conn,"select * from tbl_library_branch where branchId IN "
+			//		+ "(select branchId from tbl_book_copies where branchId = ?)",
+			//		new Object[]{c.getBranchId()}).get(0)));
 			copies.add(c);
 		}
 		return copies;

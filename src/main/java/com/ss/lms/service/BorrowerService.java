@@ -124,17 +124,17 @@ public class BorrowerService {
 
 	public List<Branch> readBranch() throws Exception {
 
-		Connection c = null;
+		//Connection c = null;
 		List<Branch> listOfBranchs = null;
 
 		try {
-			c = connUtil.connectDatabase();
-			listOfBranchs = branchDAO.readBranchs(c);
+			//c = connUtil.connectDatabase();
+			listOfBranchs = branchDAO.findAll();
 		} catch (Exception e) {
-
+			
 			throw e;
 		} finally {
-			c.close();
+			//c.close();
 		}
 
 		return listOfBranchs;
@@ -238,7 +238,7 @@ public class BorrowerService {
 
 		try {
 			c = connUtil.connectDatabase();
-			branch = branchDAO.readBranchsById(c, branchId);
+			//branch = branchDAO.readBranchsById(c, branchId);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;

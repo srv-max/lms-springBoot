@@ -1,17 +1,27 @@
 package com.ss.lms.entity;
 
-import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class Branch implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1118815487251491971L;
+@Entity
+@Table(name = "tbl_library_branch")
+public class Branch {
+	
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer branchId;
+	
+	@Column(name="branchName")
 	private String branchName;
+	
+	@Column(name="branchAddress")
 	private String branchAddress;
 	
 	public Integer getBranchId() {

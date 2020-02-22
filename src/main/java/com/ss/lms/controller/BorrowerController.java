@@ -147,7 +147,7 @@ public class BorrowerController {
 			return new ResponseEntity<List<Branch>>(branches, HttpStatus.OK);
 		} catch (Exception e) {
 			
-			return new ResponseEntity<List<Branch>>(new ArrayList<Branch>(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<List<Branch>>(HttpStatus.INTERNAL_SERVER_ERROR);
 
 		}
 

@@ -67,7 +67,7 @@ public class LoansDAO extends BaseDAO {
 			
 	            l.setBook(bdao.readBooksById(conn,rs.getInt("bookId")));
 	            
-	            l.setBranch(branch.readByBranchIdEssentialData(conn,rs.getInt("branchId")));
+	            //l.setBranch(branch.readByBranchIdEssentialData(conn,rs.getInt("branchId")));
 	            
 	            l.setBorrower(rowdao.readByCardNoEssentialData(conn,rs.getInt("cardNo")));
 	            l.setDateIn(rs.getDate("dateIn").toLocalDate());
