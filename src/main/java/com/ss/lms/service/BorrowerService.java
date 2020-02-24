@@ -64,8 +64,7 @@ public class BorrowerService {
 	@Autowired
 	LoansId loansId;
 
-	@PersistenceContext
-	EntityManager em;
+	
 
 	public BorrowerService() throws ClassNotFoundException {
 
@@ -221,10 +220,6 @@ public class BorrowerService {
 		try {
 			entityManager = entityManagerFactory.createEntityManager();
 			
-			//String sql = "SELECT book FROM Book book, Copies copies "
-				//	+"WHERE copies.noOfCopies > 0";
-			
-			
 			  String sql = "SELECT book FROM Book book INNER JOIN Copies copies " +
 			  "ON book.bookId = copies.copiesId.bookId " +
 			  "WHERE copies.copiesId.branchId = :branchId and copies.noOfCopies > 0";
@@ -348,7 +343,7 @@ public class BorrowerService {
 			// e.printStackTrace();
 			throw e;
 		} finally {
-			em.close();
+			
 		}
 		return copies;
 	}
