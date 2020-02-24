@@ -129,6 +129,19 @@ public class BorrowerController {
 		}
 
 	}
+	@RequestMapping(path = "/borrower/branches",method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE,
+			MediaType.APPLICATION_XML_VALUE })
+	public ResponseEntity<List<Branch>> getBranches() {
+		try {
+			List<Branch> branches = borrowerService.readBranch();
+			return new ResponseEntity<List<Branch>>(branches, HttpStatus.OK);
+		} catch (Exception e) {
+			
+			return new ResponseEntity<List<Branch>>(HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+
+	}
 	
 	@RequestMapping(path = "/borrower/books", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
@@ -143,5 +156,6 @@ public class BorrowerController {
 		}
 
 	}
+	
 
 }
