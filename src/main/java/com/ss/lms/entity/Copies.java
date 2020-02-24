@@ -4,9 +4,11 @@ package com.ss.lms.entity;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -25,8 +27,9 @@ public class Copies {
 	@Column(name="noOfCopies")
 	private Long noOfCopies;
 	
-	//@ManyToOne
-	//private Book book;
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bookId", insertable=false, updatable=false)
+    private Book book;
 	
 	//@ManyToOne
 	//private Branch libraryBranch;

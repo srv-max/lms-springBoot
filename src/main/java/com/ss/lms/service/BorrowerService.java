@@ -220,11 +220,26 @@ public class BorrowerService {
 		EntityManager entityManager = null;
 		try {
 			entityManager = entityManagerFactory.createEntityManager();
+			
+			//String sql = "SELECT book FROM Book book, Copies copies "
+				//	+"WHERE copies.noOfCopies > 0";
+			
+			
+			  String sql = "SELECT book FROM Book book INNER JOIN Copies copies " +
+			  "ON book.bookId = copies.copiesId.bookId " +
+			  "WHERE copies.copiesId.branchId = :branchId and copies.noOfCopies > 0";
+			 
+			TypedQuery<Book> query
+		      = entityManager.createQuery(sql, Book.class)
+		      .setParameter("branchId", Long.valueOf(branchId));
+			
+		    listOfBooks = query.getResultList();
+		    System.out.println(listOfBooks.isEmpty());
 			//listOfBooks = entityManager.
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		} finally {
-			// c.close();
+			entityManager.close();
 		}
 		
 		

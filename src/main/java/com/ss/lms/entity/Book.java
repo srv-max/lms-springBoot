@@ -8,7 +8,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -42,22 +42,26 @@ public class Book {
 	@JoinColumn(name = "pubId")
 	private Publisher publisher;
 	
-	@ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "tbl_book_authors",
-            joinColumns = @JoinColumn(name = "bookId"),
-            		
-            inverseJoinColumns = @JoinColumn(name = "authorId")
-    )
-	private List<Author> authors;
 	
-	@ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "tbl_book_genres",
-            joinColumns = @JoinColumn(name = "bookId"),
-            inverseJoinColumns = @JoinColumn(name = "genre_id")
-    )
-	private List<Genre> genres;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "book")
+    private List<Copies> copies;
+	
+	/*
+	 * @ManyToMany(cascade = CascadeType.ALL)
+	 * 
+	 * @JoinTable( name = "tbl_book_authors", joinColumns = @JoinColumn(name =
+	 * "bookId"),
+	 * 
+	 * inverseJoinColumns = @JoinColumn(name = "authorId") ) private List<Author>
+	 * authors;
+	 * 
+	 * @ManyToMany(cascade = CascadeType.ALL)
+	 * 
+	 * @JoinTable( name = "tbl_book_genres", joinColumns = @JoinColumn(name =
+	 * "bookId"), inverseJoinColumns = @JoinColumn(name = "genre_id") ) private
+	 * List<Genre> genres;
+	 */
 	
 	/*
 	 * @OneToMany private List<Author> authors;
