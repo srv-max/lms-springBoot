@@ -60,7 +60,7 @@ public class BorrowerService {
 
 	@Autowired
 	CopiesId copiesId;
-	
+
 	@Autowired
 	LoansId loansId;
 
@@ -72,48 +72,86 @@ public class BorrowerService {
 	}
 
 	public Loans checkOutBook(Integer branchId, Integer bookId, Integer cardNo) {
-		
+
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		try {
-			
-			//updating copies_table
+
+			// updating copies_table
 			Optional<Copies> copy = readCopyByBranchIDBookID(bookId, branchId);
 			Integer noOfCopies = copy.get().getNoOfCopies() != null ? copy.get().getNoOfCopies().intValue() : null;
 			entityManager.getTransaction().begin();
-			
+
 			Copies updateCopy = copy.get();
 			updateCopy.setNoOfCopies(Long.valueOf(noOfCopies - 1));
 			entityManager.merge(updateCopy);
-			
-			//updating tbl_book_loans
+
+			// updating tbl_book_loans
 			Long lBranchId = Long.valueOf(branchId);
 			Long lBookId = Long.valueOf(bookId);
 			Long lCardNo = Long.valueOf(cardNo);
-			
+
 			LocalDate todayDate = LocalDate.now();
 			LocalDate dueDate = todayDate.plusDays(7);
-			
+
 			loansId.setBookId(lBookId);
 			loansId.setBranchId(lBranchId);
 			loansId.setCardNo(lCardNo);
-			
+
 			loan.setLoansId(loansId);
 			loan.setDateOut(todayDate);
 			loan.setDueDate(dueDate);
-			
+
 			entityManager.persist(loan);
 
 			entityManager.getTransaction().commit();
 
 		} catch (Exception e) {
-			
-			//e.printStackTrace();
+
 			throw e;
 
 		} finally {
 			entityManager.close();
 		}
 		return loan;
+	}
+
+	public Loans returnBook(Integer branchId, Integer bookId, Integer cardNo) throws Exception {
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		
+		try {
+			
+		
+		// updating copies_table
+		Optional<Copies> copy = readCopyByBranchIDBookID(bookId, branchId);
+		Integer noOfCopies = copy.get().getNoOfCopies() != null ? copy.get().getNoOfCopies().intValue() : null;
+		entityManager.getTransaction().begin();
+
+		Copies updateCopy = copy.get();
+		updateCopy.setNoOfCopies(Long.valueOf(noOfCopies + 1));
+		entityManager.merge(updateCopy);
+
+		/// updating tbl_book_loans
+		
+		LocalDate returnDate = LocalDate.now();
+		loan = readLoansByBookIdBranchIDCardNo(bookId, branchId,cardNo).get();
+		
+		
+		// loanDAO.updateDateIn(c, book, branch, borrower, Date.valueOf(localDate));
+		loan.setDateIn(returnDate);
+		
+		entityManager.merge(loan);
+		
+		entityManager.getTransaction().commit();
+
+		}
+		catch (Exception e){
+			throw e;
+		}
+		finally {
+			entityManager.close();
+		}
+		return loan;
+
 	}
 
 	public List<Branch> readBranch() throws Exception {
@@ -243,21 +281,23 @@ public class BorrowerService {
 
 	}
 
-	public Loans readLoansByBookIdBranchIDCardNo(Integer bookId, Integer branchId, Integer cardNo) throws Exception {
-		// TODO Auto-generated method stub
-		Connection c = null;
-		Loans loans = null;
+	public Optional<Loans> readLoansByBookIdBranchIDCardNo(Integer bookId, Integer branchId, Integer cardNo) throws Exception {
+		
+		Optional<Loans> loans = null;
 
 		try {
-			c = connUtil.connectDatabase();
+			loansId.setBookId(Long.valueOf(bookId));
+			loansId.setBranchId((Long.valueOf(branchId)));
+			loansId.setCardNo((Long.valueOf(cardNo)));
 
+			loans = loanDAO.findById(loansId);
 			// loans = loanDAO.readLoansByBookIdBranchIDCardNo(c,bookId, branchId,
 			// cardNo).get(0);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		} finally {
-			c.close();
+			
 		}
 		return loans;
 	}
@@ -273,13 +313,15 @@ public class BorrowerService {
 			copies = cDAO.findById(copiesId);
 
 		} catch (Exception e) {
-			//e.printStackTrace();
+			// e.printStackTrace();
 			throw e;
 		} finally {
 			em.close();
 		}
 		return copies;
 	}
+	
+
 
 	public Loans checkOutBook(Branch branch, Book book, Borrower borrower) throws Exception {
 		Connection c = null;

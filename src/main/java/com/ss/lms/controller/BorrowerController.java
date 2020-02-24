@@ -38,7 +38,7 @@ public class BorrowerController {
 	BorrowerService borrowerService;
 
 	@Autowired
-	Branch branch;
+	Optional<Branch> branch;
 
 	@RequestMapping(path = "borrower/{cardNo}/library/{branchId}/books/{bookId}:checkout", method = RequestMethod.POST, produces = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
@@ -52,9 +52,7 @@ public class BorrowerController {
 		try {
 
 			borrower = borrowerService.readBorrowerByCardNo(cardNo);
-
 			book = borrowerService.readBooksById(bookId);
-
 			branch = borrowerService.readBranchsById(branchId);
 
 			if (!(borrower.isPresent() && book.isPresent() && branch.isPresent())) {
@@ -74,7 +72,7 @@ public class BorrowerController {
 			}
 
 		} catch (Exception e) {
-			
+
 			return new ResponseEntity<Loans>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -89,9 +87,32 @@ public class BorrowerController {
 			}
 
 		}
-	
 
 		return new ResponseEntity<Loans>(HttpStatus.ACCEPTED);
+	}
+
+	@RequestMapping(path = "borrower/{cardNo}/library/{branchId}/books/{bookId}:return", method = RequestMethod.POST, produces = {
+			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+	public ResponseEntity<Loans> returnBook(@PathVariable("cardNo") Integer cardNo,
+			@PathVariable("branchId") Integer branchId, @PathVariable("bookId") Integer bookId) throws SQLException {
+
+		try {
+
+			Optional<Loans> readLoan = borrowerService.readLoansByBookIdBranchIDCardNo(bookId, branchId, cardNo);
+			if (readLoan.isPresent()) {
+				Loans l = borrowerService.returnBook(branchId, bookId, cardNo);
+				return new ResponseEntity<Loans>(l, HttpStatus.ACCEPTED);
+				
+			}
+			else {
+				return new ResponseEntity<Loans>(HttpStatus.NOT_FOUND);
+			}
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			return new ResponseEntity<Loans>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+
 	}
 
 	@RequestMapping(path = "/borrower/books", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE,
