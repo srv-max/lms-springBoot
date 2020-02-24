@@ -1,13 +1,20 @@
 package com.ss.lms.entity;
 
-import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-public class Genre implements Serializable{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -7442442946403625978L;
+@Entity
+@Table(name = "tbl_genre")
+public class Genre {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer genre_id;
+	
+	@Column(name = "genre_name")
 	private String genre_name;
 
 	public Integer getGenre_id() {

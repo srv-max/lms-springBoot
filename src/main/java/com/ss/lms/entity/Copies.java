@@ -1,53 +1,51 @@
 package com.ss.lms.entity;
 
-import java.io.Serializable;
 
-public class Copies implements Serializable {
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
-	private static final long serialVersionUID = -5459027020967892222L;
-	private Integer noOfCopies;
-	private Integer bookId;
-	private Integer branchId;
-	private Book book;
-	private Branch libraryBranch;
+import org.springframework.stereotype.Component;
 
-	public Book getBook() {
-		return book;
-	}
+@Entity
+@Table(name = "tbl_book_copies")
+@Component
+public class Copies {
 
-	public void setBook(Book book) {
-		this.book = book;
-	}
 
-	public Branch getLibraryBranch() {
-		return libraryBranch;
-	}
 
-	public void setLibraryBranch(Branch branch) {
-		this.libraryBranch = branch;
-	}
+	@EmbeddedId
+	private CopiesId copiesId;
+	
+	@Column(name="noOfCopies")
+	private Long noOfCopies;
+	
+	//@ManyToOne
+	//private Book book;
+	
+	//@ManyToOne
+	//private Branch libraryBranch;
+	/*
+	 * public Book getBook() { return book; }
+	 * 
+	 * public void setBook(Book book) { this.book = book; }
+	 * 
+	 * public Branch getLibraryBranch() { return libraryBranch; }
+	 * 
+	 * public void setLibraryBranch(Branch branch) { this.libraryBranch = branch; }
+	 */
 
-	public Integer getNoOfCopies() {
+	public Long getNoOfCopies() {
 		return noOfCopies;
 	}
 
-	public void setNoOfCopies(Integer noOfCopies) {
+	public void setNoOfCopies(Long noOfCopies) {
 		this.noOfCopies = noOfCopies;
 	}
 
-	public Integer getBookId() {
-		return bookId;
-	}
-
-	public void setBookId(Integer bookId) {
-		this.bookId = bookId;
-	}
-
-	public Integer getBranchId() {
-		return branchId;
-	}
-
-	public void setBranchId(Integer branchId) {
-		this.branchId = branchId;
-	}
 }

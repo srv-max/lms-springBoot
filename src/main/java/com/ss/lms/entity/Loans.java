@@ -1,9 +1,19 @@
 package com.ss.lms.entity;
 
 import java.io.Serializable;
+
 import java.time.LocalDate;
 
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.Table;
+
 import org.springframework.stereotype.Component;
+
+@Entity
+@Table(name = "tbl_book_loans")
 @Component
 public class Loans implements Serializable {
 	/**
@@ -11,16 +21,18 @@ public class Loans implements Serializable {
 	 */
 	private static final long serialVersionUID = -8268329077429523053L;
 
-	private Branch branch;
+	@EmbeddedId
+	private LoansId loansId;
 
-	private Book book;
-	private Borrower borrower;
+	@Column(name = "dateOut")
 	private LocalDate dateOut;
+
+	@Column(name = "dueDate")
 	private LocalDate dueDate;
+
+	@Column(name = "dateIn")
 	private LocalDate dateIn;
-
 	
-
 	public LocalDate getDateOut() {
 		return dateOut;
 	}
@@ -45,29 +57,13 @@ public class Loans implements Serializable {
 		this.dateIn = dateIn;
 	}
 
-	public Branch getBranch() {
-		return branch;
+	public LoansId getLoansId() {
+		return loansId;
 	}
 
-	public void setBranch(Branch branch) {
-		this.branch = branch;
+	public void setLoansId(LoansId loansId) {
+		this.loansId = loansId;
 	}
-
-	public Book getBook() {
-		return book;
-	}
-
-	public void setBook(Book book) {
-		this.book = book;
-	}
-
-	public Borrower getBorrower() {
-		return borrower;
-	}
-
-	public void setBorrower(Borrower borrower) {
-		this.borrower = borrower;
-	}
-
+	
 
 }

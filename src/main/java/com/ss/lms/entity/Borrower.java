@@ -1,23 +1,37 @@
 package com.ss.lms.entity;
 
-import java.io.Serializable;
-import java.util.List;
 
-public class Borrower implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6928430757502927949L;
-	private Integer cardNo;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "tbl_borrower")
+public class Borrower  {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long cardNo;
+	
+	@Column(name = "name")
 	private String name;
+	
+	@Column(name = "address")
 	private String address;
+	
+	@Column(name = "phone")
 	private String phone;
-	//private List<Book> availableBooks;
-	public Integer getCardNo() {
+	
+	
+	public Long getCardNo() {
 		return cardNo;
 	}
 
-	public void setCardNo(Integer cardNo) {
+	public void setCardNo(Long cardNo) {
 		this.cardNo = cardNo;
 	}
 
@@ -45,10 +59,4 @@ public class Borrower implements Serializable {
 		this.phone = phone;
 	}
 
-	/*
-	 * public List<Book> getAvailableBooks() { return availableBooks; }
-	 * 
-	 * public void setAvailableBooks(List<Book> availableBooks) {
-	 * this.availableBooks = availableBooks; }
-	 */
 }

@@ -1,20 +1,33 @@
 package com.ss.lms.entity;
 
-import java.io.Serializable;
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import org.springframework.stereotype.Component;
+
+
+@Entity
+@Table(name = "tbl_publisher")
 @Component
-public class Publisher implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6753974971728375052L;
+public class Publisher{
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer publisherId;
+	
+	@Column(name = "publisherName")
 	private String publisherName;
+	
+	@Column(name = "publisherAddress")
 	private String publisherAddress;
+	
+	@Column(name = "publisherPhone")
 	private String publisherPhone;
-	//private List<Book> books;
+	
 
 	public Integer getPublisherId() {
 		return publisherId;
@@ -48,9 +61,4 @@ public class Publisher implements Serializable {
 		this.publisherPhone = publisherPhone;
 	}
 
-	/*
-	 * public List<Book> getBooks() { return books; }
-	 * 
-	 * public void setBooks(List<Book> books) { this.books = books; }
-	 */
 }

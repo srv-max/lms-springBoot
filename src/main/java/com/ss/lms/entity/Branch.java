@@ -16,7 +16,7 @@ public class Branch {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer branchId;
+	private Long branchId;
 	
 	@Column(name="branchName")
 	private String branchName;
@@ -24,11 +24,11 @@ public class Branch {
 	@Column(name="branchAddress")
 	private String branchAddress;
 	
-	public Integer getBranchId() {
+	public Long getBranchId() {
 		return branchId;
 	}
 
-	public void setBranchId(Integer branchId) {
+	public void setBranchId(Long branchId) {
 		this.branchId = branchId;
 	}
 
