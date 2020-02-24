@@ -114,7 +114,26 @@ public class BorrowerController {
 
 
 	}
+	
+	@RequestMapping(path = "/borrower/{branchId}/books",method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE,
+			MediaType.APPLICATION_XML_VALUE })
+	public ResponseEntity<List<Book>> getBooksByBranchID(@PathVariable Integer branchId) {
+		try {
+			
+			
+			List<Book> books = borrowerService.getAvailableBooksByBranch(branchId);
+			if (books.isEmpty()) {
+				return new ResponseEntity<List<Book>>(books, HttpStatus.NOT_FOUND);
+			}
+			return new ResponseEntity<List<Book>>(books, HttpStatus.OK);
+		} catch (Exception e) {
+			
+			return new ResponseEntity<List<Book>>(HttpStatus.INTERNAL_SERVER_ERROR);
 
+		}
+
+	}
+	
 	@RequestMapping(path = "/borrower/books", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<List<Book>> getBooks() {
