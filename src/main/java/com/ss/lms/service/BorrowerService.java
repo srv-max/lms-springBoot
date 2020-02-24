@@ -1,6 +1,5 @@
 package com.ss.lms.service;
 
-import java.sql.Connection;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -10,8 +9,7 @@ import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
+
 import javax.persistence.TypedQuery;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +32,7 @@ import com.ss.lms.entity.LoansId;
 @Component
 public class BorrowerService {
 
-	@Autowired
-	ConnectionUtil connUtil;
+	
 
 	@Autowired
 	BorrowerDAO brDAO;
@@ -155,64 +152,24 @@ public class BorrowerService {
 
 	public List<Branch> readBranch() throws Exception {
 
-		// Connection c = null;
 		List<Branch> listOfBranchs = null;
 
 		try {
-			// c = connUtil.connectDatabase();
+			
 			listOfBranchs = branchDAO.findAll();
 		} catch (Exception e) {
 
 			throw e;
 		} finally {
-			// c.close();
+		
 		}
 
 		return listOfBranchs;
 	}
 
-	public List<Book> getAvailableBooksByBranch(Branch branch) throws SQLException {
-		Connection c = null;
-		List<Book> listOfBooks = new ArrayList<>();
 
-		try {
-			c = connUtil.connectDatabase();
-			List<Copies> listOfCopies = readCopies();
-			for (int i = 0; i < listOfCopies.size(); i++) {
-				boolean copiesAvailable = listOfCopies.get(i).getNoOfCopies() > 0;
-				// boolean branchIdMatches = listOfCopies.get(i).getBranchId() ==
-				// branch.getBranchId();
-				// if (branchIdMatches && copiesAvailable) {
-				// listOfBooks.add(listOfCopies.get(i).getBook());
 
-				// }
-			}
-
-		} catch (Exception e) {
-
-		} finally {
-			c.close();
-		}
-		return listOfBooks;
-
-	}
-
-	private List<Copies> readCopies() throws SQLException {
-
-		Connection c = null;
-		List<Copies> listOfCopies = null;
-		// System.out.println("The size of branch " + listOfBranchs.size());
-		try {
-			c = connUtil.connectDatabase();
-			// listOfCopies = cDAO.readCopies(c);
-		} catch (Exception e) {
-
-		} finally {
-			c.close();
-		}
-
-		return listOfCopies;
-	}
+	
 	public List<Book> getAvailableBooksByBranch(Integer branchId) {
 		// TODO Auto-generated method stub
 		List<Book> listOfBooks = new ArrayList<>();
@@ -229,8 +186,7 @@ public class BorrowerService {
 		      .setParameter("branchId", Long.valueOf(branchId));
 			
 		    listOfBooks = query.getResultList();
-		    System.out.println(listOfBooks.isEmpty());
-			//listOfBooks = entityManager.
+		    
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -241,21 +197,7 @@ public class BorrowerService {
 		return listOfBooks;
 	}
 
-	public List<Book> readBooks() throws SQLException {
-
-		// Connection c = null;
-		List<Book> listOfBooks = null;
-
-		try {
-			// c = connUtil.connectDatabase();
-			listOfBooks = bDAO.findAll();
-		} catch (Exception e) {
-
-		} finally {
-			// c.close();
-		}
-		return listOfBooks;
-	}
+	
 
 	public Optional<Book> readBooksById(Integer bookId) throws Exception {
 
@@ -346,6 +288,22 @@ public class BorrowerService {
 			
 		}
 		return copies;
+	}
+	
+	public List<Book> readBooks() throws SQLException {
+
+		// Connection c = null;
+		List<Book> listOfBooks = null;
+
+		try {
+			// c = connUtil.connectDatabase();
+			listOfBooks = bDAO.findAll();
+		} catch (Exception e) {
+
+		} finally {
+			// c.close();
+		}
+		return listOfBooks;
 	}
 	
 

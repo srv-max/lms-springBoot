@@ -18,18 +18,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ss.lms.DAO.BookDAO;
-import com.ss.lms.DAO.BorrowerDAO;
-import com.ss.lms.DAO.BranchDAO;
-import com.ss.lms.DAO.CopiesDAO;
-import com.ss.lms.DAO.LoansDAO;
+
 import com.ss.lms.entity.Book;
 import com.ss.lms.entity.Borrower;
 import com.ss.lms.entity.Branch;
 import com.ss.lms.entity.Copies;
 import com.ss.lms.entity.Loans;
 import com.ss.lms.service.BorrowerService;
-import com.ss.lms.service.ConnectionUtil;
+
 
 @RestController
 public class BorrowerController {
