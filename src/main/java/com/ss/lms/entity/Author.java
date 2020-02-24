@@ -25,14 +25,6 @@ public class Author {
 	@Column(name = "authorName")
 	private String authorName;
 	
-	@ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "tbl_book_authors",
-            joinColumns = @JoinColumn(name = "authorId"),
-            		
-            inverseJoinColumns = @JoinColumn(name = "bookId")
-    )
-	private List<Author> authors;
 	
 
 	public Integer getAuthorId() {
