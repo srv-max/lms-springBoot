@@ -26,28 +26,28 @@ import com.ss.lms.entity.LoansId;
 public class BorrowerService {
 
 	@Autowired
-	BorrowerDAO borrowerDAO;
+	private BorrowerDAO borrowerDAO;
 
 	@Autowired
-	CopiesDAO copiesDAO;
+	private CopiesDAO copiesDAO;
 
 	@Autowired
-	BookDAO bookDAO;
+	private BookDAO bookDAO;
 
 	@Autowired
-	BranchDAO branchDAO;
+	private BranchDAO branchDAO;
 
 	@Autowired
-	LoansDAO loanDAO;
+	private LoansDAO loanDAO;
 
 	@Autowired
-	Loans loan;
+	private Loans loan;
 
 	@Autowired
-	CopiesId copiesId;
+	private CopiesId copiesId;
 
 	@Autowired
-	LoansId loansId;
+	private LoansId loansId;
 
 	public BorrowerService() {
 
