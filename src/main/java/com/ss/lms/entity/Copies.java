@@ -27,9 +27,9 @@ public class Copies {
 	@Column(name="noOfCopies")
 	private Long noOfCopies;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bookId", insertable=false, updatable=false)
-    private Book book;
+	//@ManyToOne(fetch = FetchType.LAZY)
+    //@JoinColumn(name = "bookId", insertable=false, updatable=false)
+   // private Book book;
 	
 	//@ManyToOne
 	//private Branch libraryBranch;

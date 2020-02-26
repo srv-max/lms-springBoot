@@ -18,14 +18,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import org.springframework.web.bind.annotation.RestController;
 
-
 import com.ss.lms.entity.Book;
 import com.ss.lms.entity.Borrower;
 import com.ss.lms.entity.Branch;
 import com.ss.lms.entity.Copies;
 import com.ss.lms.entity.Loans;
 import com.ss.lms.service.BorrowerService;
-
 
 @RestController
 public class BorrowerController {
@@ -98,9 +96,8 @@ public class BorrowerController {
 			if (readLoan.isPresent()) {
 				Loans l = borrowerService.returnBook(branchId, bookId, cardNo);
 				return new ResponseEntity<Loans>(l, HttpStatus.ACCEPTED);
-				
-			}
-			else {
+
+			} else {
 				return new ResponseEntity<Loans>(HttpStatus.NOT_FOUND);
 			}
 		} catch (Exception e1) {
@@ -108,54 +105,43 @@ public class BorrowerController {
 			return new ResponseEntity<Loans>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-
 	}
-	
-	@RequestMapping(path = "/borrower/{branchId}/books",method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE,
-			MediaType.APPLICATION_XML_VALUE })
+
+	@RequestMapping(path = "/borrower/branches/{branchId}/books", method = RequestMethod.GET, produces = {
+			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<List<Book>> getBooksByBranchID(@PathVariable Integer branchId) {
-		try {
+
+		Optional<List<Book>> books = borrowerService.getAvailableBooksByBranch(branchId);
+
+		// branch does not exist
+		if (books != null) {
 			
-			
-			List<Book> books = borrowerService.getAvailableBooksByBranch(branchId);
-			if (books.isEmpty()) {
-				return new ResponseEntity<List<Book>>(books, HttpStatus.NOT_FOUND);
+			// checking if library has books
+			if (!books.get().isEmpty()) {
+				return new ResponseEntity<List<Book>>(books.get(), HttpStatus.OK);
 			}
-			return new ResponseEntity<List<Book>>(books, HttpStatus.OK);
-		} catch (Exception e) {
-			
-			return new ResponseEntity<List<Book>>(HttpStatus.INTERNAL_SERVER_ERROR);
 
 		}
 
+		return new ResponseEntity<List<Book>>(HttpStatus.NOT_FOUND);
 	}
-	@RequestMapping(path = "/borrower/branches",method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE,
-			MediaType.APPLICATION_XML_VALUE })
+
+	@RequestMapping(path = "/borrower/branches", method = RequestMethod.GET, produces = {
+			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<List<Branch>> getBranches() {
-		try {
-			List<Branch> branches = borrowerService.readBranch();
-			return new ResponseEntity<List<Branch>>(branches, HttpStatus.OK);
-		} catch (Exception e) {
-			
-			return new ResponseEntity<List<Branch>>(HttpStatus.INTERNAL_SERVER_ERROR);
 
-		}
+		List<Branch> branches = borrowerService.readBranch();
+		return new ResponseEntity<List<Branch>>(branches, HttpStatus.OK);
 
 	}
-	
+
 	@RequestMapping(path = "/borrower/books", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<List<Book>> getBooks() {
-		try {
-			List<Book> books = borrowerService.readBooks();
-			return new ResponseEntity<List<Book>>(books, HttpStatus.OK);
-		} catch (Exception e) {
 
-			return new ResponseEntity<List<Book>>(new ArrayList<Book>(), HttpStatus.INTERNAL_SERVER_ERROR);
-
-		}
+		List<Book> books = borrowerService.readBooks();
+		return new ResponseEntity<List<Book>>(books, HttpStatus.OK);
 
 	}
-	
 
 }
