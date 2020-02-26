@@ -1,12 +1,8 @@
 package com.ss.lms.service;
 
 import java.time.LocalDate;
-
 import java.util.List;
 import java.util.Optional;
-
-import javax.persistence.EntityManagerFactory;
-
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

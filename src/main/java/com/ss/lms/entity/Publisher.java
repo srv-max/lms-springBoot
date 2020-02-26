@@ -1,18 +1,27 @@
 package com.ss.lms.entity;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+
+
+@Component
 @Entity
 @Table(name = "tbl_publisher")
-@Component
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "publisherId")
 public class Publisher{
 	
 	@Id
@@ -28,7 +37,11 @@ public class Publisher{
 	@Column(name = "publisherPhone")
 	private String publisherPhone;
 	
-
+	
+	@OneToMany(mappedBy = "publisher")
+	@JsonIgnore
+	private List<Book> books;
+	
 	public Integer getPublisherId() {
 		return publisherId;
 	}

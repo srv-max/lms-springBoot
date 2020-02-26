@@ -1,5 +1,6 @@
 package com.ss.lms.entity;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -18,7 +19,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "tbl_author")
-public class Author {
+public class Author implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5362668537632529686L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

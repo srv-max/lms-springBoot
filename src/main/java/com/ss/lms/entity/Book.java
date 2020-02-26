@@ -41,9 +41,9 @@ public class Book implements Serializable {
 	@JoinColumn(name = "pubId")
 	private Publisher publisher;
 
-	//@JsonIgnore
-	//@OneToMany(fetch = FetchType.LAZY, mappedBy = "book")
-	//private List<Copies> copies;
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "book")
+	private List<Copies> copies;
 
 	@ManyToMany
 	@JoinTable(name = "tbl_book_authors", joinColumns = @JoinColumn(name = "bookId"), inverseJoinColumns = @JoinColumn(name = "authorId"))
@@ -52,9 +52,6 @@ public class Book implements Serializable {
 	@ManyToMany
 	@JoinTable(name = "tbl_book_genres", joinColumns = @JoinColumn(name = "bookId"), inverseJoinColumns = @JoinColumn(name = "genre_id"))
 	private List<Genre> genres;
-
-	
-
 
 	public Book() {
 		super();

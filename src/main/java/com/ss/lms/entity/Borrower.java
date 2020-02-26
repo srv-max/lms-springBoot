@@ -2,16 +2,28 @@ package com.ss.lms.entity;
 
 
 
+import java.io.Serializable;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "tbl_borrower")
-public class Borrower  {
+public class Borrower implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7097481993876193615L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +37,10 @@ public class Borrower  {
 	
 	@Column(name = "phone")
 	private String phone;
+	
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "borrower")
+	private List<Loans> loans;
 	
 	
 	public Long getCardNo() {
