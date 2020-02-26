@@ -1,21 +1,47 @@
 package com.ss.lms.entity;
 
-import java.io.Serializable;
 import java.util.List;
 
-import org.springframework.stereotype.Component;
-@Component
-public class Publisher implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6753974971728375052L;
-	private Integer publisherId;
-	private String publisherName;
-	private String publisherAddress;
-	private String publisherPhone;
-	//private List<Book> books;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
+import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+
+
+@Component
+@Entity
+@Table(name = "tbl_publisher")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "publisherId")
+public class Publisher{
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer publisherId;
+	
+	@Column(name = "publisherName")
+	private String publisherName;
+	
+	@Column(name = "publisherAddress")
+	private String publisherAddress;
+	
+	@Column(name = "publisherPhone")
+	private String publisherPhone;
+	
+	
+	@OneToMany(mappedBy = "publisher")
+	@JsonIgnore
+	private List<Book> books;
+	
 	public Integer getPublisherId() {
 		return publisherId;
 	}
@@ -48,9 +74,4 @@ public class Publisher implements Serializable {
 		this.publisherPhone = publisherPhone;
 	}
 
-	/*
-	 * public List<Book> getBooks() { return books; }
-	 * 
-	 * public void setBooks(List<Book> books) { this.books = books; }
-	 */
 }

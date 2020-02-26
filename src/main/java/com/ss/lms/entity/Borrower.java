@@ -1,23 +1,53 @@
 package com.ss.lms.entity;
 
+
+
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+@Entity
+@Table(name = "tbl_borrower")
 public class Borrower implements Serializable {
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 6928430757502927949L;
-	private Integer cardNo;
+	private static final long serialVersionUID = 7097481993876193615L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long cardNo;
+	
+	@Column(name = "name")
 	private String name;
+	
+	@Column(name = "address")
 	private String address;
+	
+	@Column(name = "phone")
 	private String phone;
-	//private List<Book> availableBooks;
-	public Integer getCardNo() {
+	
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "borrower")
+	private List<Loans> loans;
+	
+	
+	public Long getCardNo() {
 		return cardNo;
 	}
 
-	public void setCardNo(Integer cardNo) {
+	public void setCardNo(Long cardNo) {
 		this.cardNo = cardNo;
 	}
 
@@ -45,10 +75,4 @@ public class Borrower implements Serializable {
 		this.phone = phone;
 	}
 
-	/*
-	 * public List<Book> getAvailableBooks() { return availableBooks; }
-	 * 
-	 * public void setAvailableBooks(List<Book> availableBooks) {
-	 * this.availableBooks = availableBooks; }
-	 */
 }

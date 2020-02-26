@@ -1,287 +1,176 @@
 package com.ss.lms.service;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ss.lms.DAO.BookDAO;
 import com.ss.lms.DAO.BorrowerDAO;
 import com.ss.lms.DAO.BranchDAO;
 import com.ss.lms.DAO.CopiesDAO;
 import com.ss.lms.DAO.LoansDAO;
-import com.ss.lms.entity.Author;
+
 import com.ss.lms.entity.Book;
 import com.ss.lms.entity.Borrower;
 import com.ss.lms.entity.Branch;
 import com.ss.lms.entity.Copies;
-
+import com.ss.lms.entity.CopiesId;
 import com.ss.lms.entity.Loans;
+import com.ss.lms.entity.LoansId;
 
 @Component
 public class BorrowerService {
 
 	@Autowired
-	ConnectionUtil connUtil;
+	private BorrowerDAO borrowerDAO;
 
 	@Autowired
-	BorrowerDAO brDAO;
+	private CopiesDAO copiesDAO;
 
 	@Autowired
-	CopiesDAO cDAO;
+	private BookDAO bookDAO;
 
 	@Autowired
-	BookDAO bDAO;
+	private BranchDAO branchDAO;
 
 	@Autowired
-	BranchDAO branchDAO;
+	private LoansDAO loanDAO;
 
 	@Autowired
-	LoansDAO loanDAO;
+	private Loans loan;
 
 	@Autowired
-	Loans loan;
+	private CopiesId copiesId;
 
-	public BorrowerService() throws ClassNotFoundException {
+	@Autowired
+	private LoansId loansId;
+
+	public BorrowerService() {
 
 	}
+	
+	@Transactional
+	public Loans checkOutBook(Integer branchId, Integer bookId, Integer cardNo) {
 
-	public Loans checkOutBook(Branch branch, Book book, Borrower borrower) throws Exception {
-		Connection c = null;
+			// updating copies_table
+			Optional<Copies> copy = readCopyByBranchIDBookID(bookId, branchId);
+			Integer noOfCopies = copy.get().getNoOfCopies() != null ? copy.get().getNoOfCopies().intValue() : null;
+			
+			Copies updateCopy = copy.get();
+			updateCopy.setNoOfCopies(Long.valueOf(noOfCopies - 1));
+			copiesDAO.save(updateCopy);
+			
+			// updating tbl_book_loans
+			Long lBranchId = Long.valueOf(branchId);
+			Long lBookId = Long.valueOf(bookId);
+			Long lCardNo = Long.valueOf(cardNo);
 
-		try {
-			c = connUtil.connectDatabase();
-			loan.setBorrower(borrower);
-			loan.setBranch(branch);
-			loan.setBook(book);
-			Copies copy = cDAO.readCopyByBranchIDBookID(c, book, branch).get(0);
-			Integer noOfCopies = copy.getNoOfCopies();
+			LocalDate todayDate = LocalDate.now();
+			LocalDate dueDate = todayDate.plusDays(7);
+			
+			//setting up loans id
+			loansId.setBookId(lBookId);
+			loansId.setBranchId(lBranchId);
+			loansId.setCardNo(lCardNo);
 
-			// updating tbl_book_copies
-			cDAO.updateCopies(c, book, branch, noOfCopies - 1);
-
-			LocalDate localDate = LocalDate.now();
-			LocalDate dueDate = localDate.plusDays(7);
-			loan.setDateOut(localDate);
+			loan.setLoansId(loansId);
+			loan.setDateOut(todayDate);
 			loan.setDueDate(dueDate);
-			// updating tbl_book_loans
-			loanDAO.addLoans(c, book, branch, borrower, Date.valueOf(localDate), Date.valueOf(dueDate));
-			c.commit();
+			
+			loanDAO.save(loan);
 
-		} catch (Exception e) {
-			c.rollback();
-
-			throw e;
-
-		} finally {
-			c.close();
-		}
 		return loan;
-
 	}
+	
+	@Transactional
+	public Loans returnBook(Integer branchId, Integer bookId, Integer cardNo)  {
+		
+			// updating copies_table
+			Optional<Copies> copy = readCopyByBranchIDBookID(bookId, branchId);
+			Integer noOfCopies = copy.get().getNoOfCopies() != null ? copy.get().getNoOfCopies().intValue() : null;
 
-	public Loans returnBook(Branch branch, Book book, Borrower borrower) throws Exception {
-		Connection c = null;
-		try {
-			c = connUtil.connectDatabase();
+			Copies updateCopy = copy.get();
+			updateCopy.setNoOfCopies(Long.valueOf(noOfCopies + 1));
+			
+			/// updating tbl_book_loans
+			LocalDate returnDate = LocalDate.now();
+			loan = readLoansByBookIdBranchIDCardNo(bookId, branchId, cardNo).get();
+			loan.setDateIn(returnDate);
 
-			loan.setBorrower(borrower);
-			loan.setBook(book);
-			loan.setBranch(branch);
+			loanDAO.save(loan);
 
-			Copies copy = cDAO.readCopyByBranchIDBookID(c, book, branch).get(0);
-			Integer noOfCopies = copy.getNoOfCopies();
-
-			// updating tbl_book_copies
-			cDAO.updateCopies(c, book, branch, noOfCopies + 1);
-			LocalDate localDate = LocalDate.now();
-
-			// updating tbl_book_loans
-			loanDAO.updateDateIn(c, book, branch, borrower, Date.valueOf(localDate));
-			loan.setDateIn(localDate);
-
-			Loans getDate = loanDAO.readLoansByBookIdBranchIDCardNo(c, loan.getBook().getBookId(),
-					loan.getBranch().getBranchId(), loan.getBorrower().getCardNo()).get(0);
-
-			loan.setDateOut(getDate.getDateOut());
-			loan.setDueDate(getDate.getDueDate());
-
-			c.commit();
-
-		} catch (Exception e) {
-			c.rollback();
-
-			throw e;
-
-		}
 		return loan;
 	}
 
-	public List<Branch> readBranch() throws Exception {
+	public List<Branch> readBranches()  {
 
-		Connection c = null;
-		List<Branch> listOfBranchs = null;
-
-		try {
-			c = connUtil.connectDatabase();
-			listOfBranchs = branchDAO.readBranchs(c);
-		} catch (Exception e) {
-
-			throw e;
-		} finally {
-			c.close();
-		}
-
-		return listOfBranchs;
+		return branchDAO.findAll();
 	}
 
-	public List<Book> getAvailableBooksByBranch(Branch branch) throws SQLException {
-		Connection c = null;
-		List<Book> listOfBooks = new ArrayList<>();
-
-		try {
-			c = connUtil.connectDatabase();
-			List<Copies> listOfCopies = readCopies();
-			for (int i = 0; i < listOfCopies.size(); i++) {
-				boolean copiesAvailable = listOfCopies.get(i).getNoOfCopies() > 0;
-				boolean branchIdMatches = listOfCopies.get(i).getBranchId() == branch.getBranchId();
-				if (branchIdMatches && copiesAvailable) {
-					listOfBooks.add(listOfCopies.get(i).getBook());
-
-				}
-			}
-
-		} catch (Exception e) {
-
-		} finally {
-			c.close();
+	public Optional<List<Book>> getAvailableBooksByBranch(Integer branchId) {
+		Optional<Branch> branch = branchDAO.findById(Long.valueOf(branchId));
+		
+		if (branch.isPresent()) {
+			return Optional.of(branch.get().getBooks());
 		}
-		return listOfBooks;
-
+		
+		return null;
 	}
 
-	private List<Copies> readCopies() throws SQLException {
+	public Optional<Book> readBooksById(Integer bookId) {
 
-		Connection c = null;
-		List<Copies> listOfCopies = null;
-		// System.out.println("The size of branch " + listOfBranchs.size());
-		try {
-			c = connUtil.connectDatabase();
-			listOfCopies = cDAO.readCopies(c);
-		} catch (Exception e) {
-
-		} finally {
-			c.close();
-		}
-
-		return listOfCopies;
-	}
-
-	public List<Book> readBooks() throws SQLException {
-
-		Connection c = null;
-		List<Book> listOfBooks = null;
+		Optional<Book> book = null;
 
 		try {
-			c = connUtil.connectDatabase();
-			listOfBooks = bDAO.readBooks(c);
-		} catch (Exception e) {
 
-		} finally {
-			c.close();
-		}
-		return listOfBooks;
-	}
-
-	public Book readBooksById(Integer bookId) throws Exception {
-
-		Connection c = null;
-		Book book = null;
-
-		try {
-			c = connUtil.connectDatabase();
-			book=bDAO.readBooksById(c, bookId);
+			book = bookDAO.findById(Long.valueOf(bookId));
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		} finally {
-			c.close();
+
 		}
 		return book;
 	}
 
-	public Borrower readByCardNoEssentialData(Integer cardNo) throws Exception {
-		Connection c = null;
-		Borrower borrower = null;
+	public Optional<Borrower> readBorrowerByCardNo(Integer cardNo)  {
 
-		try {
-			c = connUtil.connectDatabase();
-			borrower = brDAO.readByCardNoEssentialData(c, cardNo);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		} finally {
-			c.close();
-		}
-		return borrower;
+		return borrowerDAO.findById(Long.valueOf(cardNo));
 
 	}
 
-	public Branch readBranchsById(Integer branchId) throws Exception {
-		Connection c = null;
-		Branch branch = null;
+	public Optional<Branch> readBranchsById(Integer branchId) {
 
-		try {
-			c = connUtil.connectDatabase();
-			branch = branchDAO.readBranchsById(c, branchId);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		} finally {
-			c.close();
-		}
-		return branch;
+		return branchDAO.findById(Long.valueOf(branchId));
 
 	}
 
-	public Copies readCopyByBranchIDBookID(Book book, Branch branch) throws Exception {
-		Connection c = null;
-		Copies copies = null;
+	public Optional<Loans> readLoansByBookIdBranchIDCardNo(Integer bookId, Integer branchId, Integer cardNo) {
 
-		try {
-			c = connUtil.connectDatabase();
-			copies = cDAO.readCopyByBranchIDBookID(c, book, branch).get(0);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		} finally {
-			c.close();
-		}
-		return copies;
+		loansId.setBookId(Long.valueOf(bookId));
+		loansId.setBranchId((Long.valueOf(branchId)));
+		loansId.setCardNo((Long.valueOf(cardNo)));
+
+		return loanDAO.findById(loansId);
 
 	}
 
-	public Loans readLoansByBookIdBranchIDCardNo(Integer bookId, Integer branchId, Integer cardNo) throws Exception {
-		// TODO Auto-generated method stub
-		Connection c = null;
-		Loans loans = null;
+	public Optional<Copies> readCopyByBranchIDBookID(Integer bookId, Integer branchId) {
 
-		try {
-			c = connUtil.connectDatabase();
-			
-			loans = loanDAO.readLoansByBookIdBranchIDCardNo(c,bookId, branchId, cardNo).get(0);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		} finally {
-			c.close();
-		}
-		return loans;
+		copiesId.setBookId(Long.valueOf(bookId));
+		copiesId.setBranchId((Long.valueOf(branchId)));
+
+		return copiesDAO.findById(copiesId);
+
+	}
+
+	public List<Book> readBooks() {
+
+		return bookDAO.findAll();
 	}
 
 }
