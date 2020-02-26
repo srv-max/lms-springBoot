@@ -1,18 +1,16 @@
 package com.ss.lms.service;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import javax.persistence.TypedQuery;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ss.lms.DAO.BookDAO;
 import com.ss.lms.DAO.BorrowerDAO;
@@ -32,13 +30,13 @@ import com.ss.lms.entity.LoansId;
 public class BorrowerService {
 
 	@Autowired
-	BorrowerDAO brDAO;
+	BorrowerDAO borrowerDAO;
 
 	@Autowired
-	CopiesDAO cDAO;
+	CopiesDAO copiesDAO;
 
 	@Autowired
-	BookDAO bDAO;
+	BookDAO bookDAO;
 
 	@Autowired
 	BranchDAO branchDAO;
@@ -50,32 +48,26 @@ public class BorrowerService {
 	Loans loan;
 
 	@Autowired
-	EntityManagerFactory entityManagerFactory;
-
-	@Autowired
 	CopiesId copiesId;
 
 	@Autowired
 	LoansId loansId;
 
-	public BorrowerService() throws ClassNotFoundException {
+	public BorrowerService() {
 
 	}
-
+	
+	@Transactional
 	public Loans checkOutBook(Integer branchId, Integer bookId, Integer cardNo) {
-
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		try {
 
 			// updating copies_table
 			Optional<Copies> copy = readCopyByBranchIDBookID(bookId, branchId);
 			Integer noOfCopies = copy.get().getNoOfCopies() != null ? copy.get().getNoOfCopies().intValue() : null;
-			entityManager.getTransaction().begin();
-
+			
 			Copies updateCopy = copy.get();
 			updateCopy.setNoOfCopies(Long.valueOf(noOfCopies - 1));
-			entityManager.merge(updateCopy);
-
+			copiesDAO.save(updateCopy);
+			
 			// updating tbl_book_loans
 			Long lBranchId = Long.valueOf(branchId);
 			Long lBookId = Long.valueOf(bookId);
@@ -83,7 +75,8 @@ public class BorrowerService {
 
 			LocalDate todayDate = LocalDate.now();
 			LocalDate dueDate = todayDate.plusDays(7);
-
+			
+			//setting up loans id
 			loansId.setBookId(lBookId);
 			loansId.setBranchId(lBranchId);
 			loansId.setCardNo(lCardNo);
@@ -91,58 +84,33 @@ public class BorrowerService {
 			loan.setLoansId(loansId);
 			loan.setDateOut(todayDate);
 			loan.setDueDate(dueDate);
+			
+			loanDAO.save(loan);
 
-			entityManager.persist(loan);
-
-			entityManager.getTransaction().commit();
-
-		} catch (Exception e) {
-
-			throw e;
-
-		} finally {
-			entityManager.close();
-		}
 		return loan;
 	}
-
-	public Loans returnBook(Integer branchId, Integer bookId, Integer cardNo) throws Exception {
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
-
-		try {
-
+	
+	@Transactional
+	public Loans returnBook(Integer branchId, Integer bookId, Integer cardNo)  {
+		
 			// updating copies_table
 			Optional<Copies> copy = readCopyByBranchIDBookID(bookId, branchId);
 			Integer noOfCopies = copy.get().getNoOfCopies() != null ? copy.get().getNoOfCopies().intValue() : null;
-			entityManager.getTransaction().begin();
 
 			Copies updateCopy = copy.get();
 			updateCopy.setNoOfCopies(Long.valueOf(noOfCopies + 1));
-			entityManager.merge(updateCopy);
-
+			
 			/// updating tbl_book_loans
-
 			LocalDate returnDate = LocalDate.now();
 			loan = readLoansByBookIdBranchIDCardNo(bookId, branchId, cardNo).get();
-
-			// loanDAO.updateDateIn(c, book, branch, borrower, Date.valueOf(localDate));
 			loan.setDateIn(returnDate);
 
-			entityManager.merge(loan);
+			loanDAO.save(loan);
 
-			entityManager.getTransaction().commit();
-
-		} catch (Exception e) {
-			throw e;
-		} finally {
-			entityManager.close();
-		}
 		return loan;
-
 	}
 
 	public List<Branch> readBranch()  {
-
 
 		return branchDAO.findAll();
 	}
@@ -157,13 +125,13 @@ public class BorrowerService {
 		return null;
 	}
 
-	public Optional<Book> readBooksById(Integer bookId) throws Exception {
+	public Optional<Book> readBooksById(Integer bookId) {
 
 		Optional<Book> book = null;
 
 		try {
 
-			book = bDAO.findById(Long.valueOf(bookId));
+			book = bookDAO.findById(Long.valueOf(bookId));
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
@@ -173,9 +141,9 @@ public class BorrowerService {
 		return book;
 	}
 
-	public Optional<Borrower> readBorrowerByCardNo(Integer cardNo) throws Exception {
+	public Optional<Borrower> readBorrowerByCardNo(Integer cardNo)  {
 
-		return brDAO.findById(Long.valueOf(cardNo));
+		return borrowerDAO.findById(Long.valueOf(cardNo));
 
 	}
 
@@ -200,13 +168,13 @@ public class BorrowerService {
 		copiesId.setBookId(Long.valueOf(bookId));
 		copiesId.setBranchId((Long.valueOf(branchId)));
 
-		return cDAO.findById(copiesId);
+		return copiesDAO.findById(copiesId);
 
 	}
 
 	public List<Book> readBooks() {
 
-		return bDAO.findAll();
+		return bookDAO.findAll();
 	}
 
 }
