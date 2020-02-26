@@ -29,7 +29,7 @@ import com.ss.lms.service.BorrowerService;
 public class BorrowerController {
 
 	@Autowired
-	BorrowerService borrowerService;
+	private BorrowerService borrowerService;
 
 
 	@PostMapping(path = "{cardNo}/branches/{branchId}/books/{bookId}:checkout", produces = {
@@ -101,7 +101,7 @@ public class BorrowerController {
 	@GetMapping(path = "branches", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<List<Branch>> getBranches() {
 
-		List<Branch> branches = borrowerService.readBranch();
+		List<Branch> branches = borrowerService.readBranches();
 		return new ResponseEntity<List<Branch>>(branches, HttpStatus.OK);
 
 	}

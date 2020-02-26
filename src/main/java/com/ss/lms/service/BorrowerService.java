@@ -106,7 +106,7 @@ public class BorrowerService {
 		return loan;
 	}
 
-	public List<Branch> readBranch()  {
+	public List<Branch> readBranches()  {
 
 		return branchDAO.findAll();
 	}
